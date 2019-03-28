@@ -1,0 +1,6 @@
+{
+    "displayName": "Test Bag",
+    "lootTable": "treasurebags:test_bag",
+    "bagColor": "#FF00FF",
+    "bagOverlayColor": "#00FF00"
+}

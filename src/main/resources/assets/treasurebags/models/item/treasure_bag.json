@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "treasurebags:item/treasure_bag",
+    "layer1": "treasurebags:item/treasure_bag_overlay"
+  }
+}

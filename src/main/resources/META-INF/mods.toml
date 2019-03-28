@@ -1,0 +1,35 @@
+modLoader="javafml"
+loaderVersion="[25,)"
+issueTrackerURL="http://my.issue.tracker/"
+displayURL="http://example.com/"
+logoFile="logo.png"
+#credits=""
+authors="SilentChaos512"
+
+[[mods]]
+    modId="treasurebags"
+    version="${file.jarVersion}"
+    displayName="Treasure Bags"
+    #updateJSONURL="http://myurl.me/"
+    description='''
+    Configurable loot bags with infinite possibilities! Control loot with loot tables and bag appearance with JSON files.
+    '''
+
+[[dependencies.treasurebags]]
+    modId="forge"
+    mandatory=true
+    versionRange="[25,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.treasurebags]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.13.2]"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.treasurebags]]
+    modId="silentlib"
+    mandatory=true
+    versionRange="[4,)"
+    ordering="NONE"
+    side="BOTH"
