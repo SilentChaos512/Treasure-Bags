@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings("deprecation")
 public final class BagTypeManager implements IResourceManagerReloadListener {
     public static final BagTypeManager INSTANCE = new BagTypeManager();
     private static final Marker MARKER = MarkerManager.getMarker("BagTypeManager");
@@ -61,9 +62,9 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
                     addBagType(deserialize(name, json));
                 }
             } catch (IllegalArgumentException | JsonParseException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Parsing error loading gear part {}", id, ex);
+                TreasureBags.LOGGER.error(MARKER, "Parsing error loading bag type {}", id, ex);
             } catch (IOException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Could not read gear part {}", id, ex);
+                TreasureBags.LOGGER.error(MARKER, "Could not read bag type {}", id, ex);
             }
         }
     }
