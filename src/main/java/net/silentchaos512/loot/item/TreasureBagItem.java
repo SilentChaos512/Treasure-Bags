@@ -34,7 +34,11 @@ public class TreasureBagItem extends ItemLootContainer {
     }
 
     public ItemStack stackOfType(IBagType type) {
-        ItemStack result = new ItemStack(this);
+        return stackOfType(type, 1);
+    }
+
+    public ItemStack stackOfType(IBagType type, int count) {
+        ItemStack result = new ItemStack(this, count);
         return setBagProperties(result, type);
     }
 
