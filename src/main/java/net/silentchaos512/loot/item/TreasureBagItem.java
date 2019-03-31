@@ -1,17 +1,22 @@
 package net.silentchaos512.loot.item;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.silentchaos512.lib.item.ItemLootContainer;
+import net.silentchaos512.lib.util.PlayerUtils;
 import net.silentchaos512.loot.TreasureBags;
 import net.silentchaos512.loot.lib.BagTypeManager;
 import net.silentchaos512.loot.lib.IBagType;
@@ -19,6 +24,7 @@ import net.silentchaos512.loot.lib.IBagType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -141,5 +147,70 @@ public class TreasureBagItem extends ItemLootContainer {
                 items.add(stackOfType(type));
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
+        ItemStack heldItem = playerIn.getHeldItem(handIn);
+        if (!(playerIn instanceof EntityPlayerMP)) {
+            return new ActionResult<>(EnumActionResult.SUCCESS, heldItem);
+        }
+        EntityPlayerMP playerMP = (EntityPlayerMP) playerIn;
+
+        // Generate items from loot table, give to player.
+        boolean openWholeStack = playerMP.isSneaking();
+        Collection<ItemStack> lootDrops = getDropsFromStack(heldItem, playerMP, openWholeStack);
+        if (lootDrops.isEmpty()) {
+            TreasureBags.LOGGER.warn("No drops from bag, is the loot table valid? {}", heldItem);
+            return new ActionResult<>(EnumActionResult.FAIL, heldItem);
+        }
+        lootDrops.forEach(stack -> {
+            PlayerUtils.giveItem(playerMP, stack);
+            listItemReceivedInChat(playerMP, stack);
+        });
+
+        // Play item pickup sound...
+        playerMP.world.playSound(null, playerMP.posX, playerMP.posY, playerMP.posZ,
+                SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
+                ((playerMP.getRNG().nextFloat() - playerMP.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        heldItem.shrink(openWholeStack ? heldItem.getCount() : 1);
+        return new ActionResult<>(EnumActionResult.SUCCESS, heldItem);
+    }
+
+    private Collection<ItemStack> getDropsFromStack(ItemStack stack, EntityPlayerMP player, boolean wholeStack) {
+        Collection<ItemStack> list = new ArrayList<>();
+        int openCount = wholeStack ? stack.getCount() : 1;
+        for (int i = 0; i < openCount; ++i) {
+            this.getLootDrops(stack, player).forEach(s -> mergeItem(list, s));
+        }
+        return list;
+    }
+
+    private static void mergeItem(Collection<ItemStack> list, ItemStack stack) {
+        for (ItemStack itemStack : list) {
+            if (ItemHandlerHelper.canItemStacksStack(itemStack, stack)) {
+                int space = itemStack.getMaxStackSize() - itemStack.getCount();
+                int toMerge = Math.min(space, stack.getCount());
+                itemStack.grow(toMerge);
+                stack.shrink(toMerge);
+
+                if (stack.isEmpty()) {
+                    return;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            list.add(stack);
+        }
+    }
+
+    private static void listItemReceivedInChat(EntityPlayerMP playerMP, ItemStack stack) {
+        ITextComponent itemReceivedText = new TextComponentTranslation(
+                "item.silentlib.lootContainer.itemReceived",
+                stack.getCount(),
+                stack.getDisplayName());
+        playerMP.sendMessage(itemReceivedText);
     }
 }
