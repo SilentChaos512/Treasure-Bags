@@ -27,7 +27,7 @@ public class GiveTreasureBagCommand {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("tb_give")
                 .requires(source -> source.hasPermissionLevel(2))
-                .then(Commands.argument("players", EntityArgument.multiplePlayers()).then(
+                .then(Commands.argument("players", EntityArgument.players()).then(
                         Commands.argument("bagType", ResourceLocationArgument.resourceLocation())
                                 .executes(context ->
                                         giveBags(context, 1))

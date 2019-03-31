@@ -59,14 +59,14 @@ public class TreasureBagItem extends ItemLootContainer {
     public static ItemStack setBagType(ItemStack stack, ResourceLocation bagTypeId) {
         if (!(stack.getItem() instanceof TreasureBagItem)) return stack;
         NBTTagCompound tag = getData(stack);
-        tag.setString(NBT_BAG_TYPE, bagTypeId.toString());
+        tag.putString(NBT_BAG_TYPE, bagTypeId.toString());
         return stack;
     }
 
     public static ItemStack setBagProperties(ItemStack stack, IBagType type) {
         if (!(stack.getItem() instanceof TreasureBagItem)) return stack;
         NBTTagCompound tag = getData(stack);
-        tag.setString(NBT_BAG_TYPE, type.getId().toString());
+        tag.putString(NBT_BAG_TYPE, type.getId().toString());
         setLootTable(stack, type.getLootTable());
 //        tag.setInt(NBT_BAG_COLOR, type.getBagColor());
 //        tag.setInt(NBT_BAG_OVERLAY_COLOR, type.getBagOverlayColor());

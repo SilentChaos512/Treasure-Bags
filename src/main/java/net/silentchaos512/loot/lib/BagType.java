@@ -55,7 +55,7 @@ public final class BagType implements IBagType {
             BagType result = new BagType(name);
 
             String tableName = JsonUtils.getString(json, "lootTable");
-            ResourceLocation lootTable = ResourceLocation.makeResourceLocation(tableName);
+            ResourceLocation lootTable = ResourceLocation.tryCreate(tableName);
             if (lootTable == null) {
                 throw new JsonParseException("Invalid loot table: " + tableName);
             }

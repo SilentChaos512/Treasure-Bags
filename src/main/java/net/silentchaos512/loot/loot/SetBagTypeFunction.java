@@ -43,7 +43,7 @@ public class SetBagTypeFunction extends LootFunction {
         @Override
         public SetBagTypeFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn) {
             String str = JsonUtils.getString(object, "type", "");
-            ResourceLocation id = ResourceLocation.makeResourceLocation(str);
+            ResourceLocation id = ResourceLocation.tryCreate(str);
             if (id == null) throw new JsonParseException("Bag type is invalid or missing: '" + str + "'");
 
             return new SetBagTypeFunction(id, conditionsIn);
