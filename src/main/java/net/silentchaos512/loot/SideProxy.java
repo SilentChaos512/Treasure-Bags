@@ -3,11 +3,13 @@ package net.silentchaos512.loot;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.silentchaos512.loot.command.GiveTreasureBagCommand;
-import net.silentchaos512.loot.init.*;
 import net.minecraftforge.fml.event.lifecycle.*;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.silentchaos512.loot.command.TreasureBagsCommand;
+import net.silentchaos512.loot.init.ModBlocks;
+import net.silentchaos512.loot.init.ModItems;
+import net.silentchaos512.loot.init.ModLoot;
 import net.silentchaos512.loot.item.TreasureBagItem;
 import net.silentchaos512.loot.lib.BagTypeManager;
 
@@ -43,7 +45,7 @@ class SideProxy {
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
         event.getServer().getResourceManager().addReloadListener(BagTypeManager.INSTANCE);
-        GiveTreasureBagCommand.register(event.getServer().getCommandManager().getDispatcher());
+        TreasureBagsCommand.register(event.getServer().getCommandManager().getDispatcher());
     }
 
     static class Client extends SideProxy {
