@@ -10,8 +10,10 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkEvent;
 import net.silentchaos512.loot.TreasureBags;
 import net.silentchaos512.loot.item.TreasureBagItem;
+import net.silentchaos512.loot.network.SyncBagTypesPacket;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -22,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation")
 public final class BagTypeManager implements IResourceManagerReloadListener {
@@ -83,5 +86,12 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
 
     private static IBagType deserialize(ResourceLocation name, JsonObject json) {
         return BagType.Serializer.deserialize(name, json);
+    }
+
+    public static void handleSyncPacket(SyncBagTypesPacket packet, Supplier<NetworkEvent.Context> context) {
+        MAP.clear();
+        packet.getBagTypes().forEach(type -> MAP.put(type.getId(), type));
+        TreasureBags.LOGGER.info("Read {} bag types from server", MAP.size());
+        context.get().setPacketHandled(true);
     }
 }

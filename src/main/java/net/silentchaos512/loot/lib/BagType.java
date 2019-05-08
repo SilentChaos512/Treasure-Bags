@@ -2,6 +2,7 @@ package net.silentchaos512.loot.lib;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.silentchaos512.utils.Color;
@@ -48,10 +49,10 @@ public final class BagType implements IBagType {
         return visible;
     }
 
-    static final class Serializer {
+    public static final class Serializer {
         private Serializer() {}
 
-        static BagType deserialize(ResourceLocation name, JsonObject json) {
+        public static BagType deserialize(ResourceLocation name, JsonObject json) {
             BagType result = new BagType(name);
 
             String tableName = JsonUtils.getString(json, "lootTable");
@@ -67,6 +68,23 @@ public final class BagType implements IBagType {
             result.visible = JsonUtils.getBoolean(json, "visible", true);
 
             return result;
+        }
+
+        public static BagType read(PacketBuffer buffer) {
+            BagType bagType = new BagType(buffer.readResourceLocation());
+            bagType.lootTable = buffer.readResourceLocation();
+            bagType.customName = buffer.readString(255);
+            bagType.bagColor = buffer.readVarInt();
+            bagType.bagOverlayColor = buffer.readVarInt();
+            return bagType;
+        }
+
+        public static void write(IBagType bagType, PacketBuffer buffer) {
+            buffer.writeResourceLocation(bagType.getId());
+            buffer.writeResourceLocation(bagType.getLootTable());
+            buffer.writeString(bagType.getCustomName());
+            buffer.writeVarInt(bagType.getBagColor());
+            buffer.writeVarInt(bagType.getBagOverlayColor());
         }
     }
 }

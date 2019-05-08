@@ -17,10 +17,14 @@ import net.silentchaos512.loot.init.ModItems;
 import net.silentchaos512.loot.init.ModLoot;
 import net.silentchaos512.loot.item.TreasureBagItem;
 import net.silentchaos512.loot.lib.BagTypeManager;
+import net.silentchaos512.loot.network.Network;
 
 class SideProxy {
     SideProxy() {
         TreasureBags.LOGGER.debug("SideProxy init");
+
+        // TODO: Config
+        Network.init();
 
         ModLoot.init();
 
