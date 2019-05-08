@@ -4,12 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.IResourceManagerReloadListener;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.silentchaos512.loot.TreasureBags;
+import net.silentchaos512.loot.item.TreasureBagItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -38,6 +40,12 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
 
     public static Collection<IBagType> getValues() {
         return MAP.values();
+    }
+
+    @Nullable
+    public static IBagType typeFromBag(ItemStack stack) {
+        if (!(stack.getItem() instanceof TreasureBagItem)) return null;
+        return TreasureBagItem.getBagType(stack);
     }
 
     @Override

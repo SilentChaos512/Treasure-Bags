@@ -48,6 +48,18 @@ public class TreasureBagItem extends ItemLootContainer {
         return setBagProperties(result, type);
     }
 
+    /**
+     * Create a bag of a type that may exist. Useful for recipes/ingredients, since bag types may
+     * not exist before they load.
+     *
+     * @param typeName The type ID
+     * @return A stack of one treasure bag
+     */
+    public ItemStack stackOfType(ResourceLocation typeName) {
+        ItemStack result = new ItemStack(this);
+        return setBagType(result, typeName);
+    }
+
     @Nullable
     public static IBagType getBagType(ItemStack stack) {
         String typeStr = getData(stack).getString(NBT_BAG_TYPE);
@@ -58,7 +70,7 @@ public class TreasureBagItem extends ItemLootContainer {
      * Set the BagType tag, nothing else. This is needed for loading from loot tables, because bag
      * types may not exist yet.
      *
-     * @param stack The bag
+     * @param stack     The bag
      * @param bagTypeId The bag type ID
      * @return The bag (modified original, not a copy)
      */
