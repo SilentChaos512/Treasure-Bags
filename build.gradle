@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.0.104', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
 
@@ -76,6 +76,17 @@ minecraft {
 repositories {
     jcenter()
     mavenLocal()
+    maven { // JEI
+        name = "Progwml6 maven"
+        url = "http://dvs1.progwml6.com/files/maven/"
+    }
+    maven { // JEI mirror
+        name = "ModMaven"
+        url = "modmaven.k-4u.nl"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
 }
 
 configurations {
@@ -88,18 +99,22 @@ dependencies {
 
     compile "net.silentchaos512:silent-lib:${project.sl_version}"
 
+//    deobf "mezz.jei:jei-${project.mc_version}:${project.jei_version}"
+//    compile 'com.github.mezz:JustEnoughItems:v5.0.0'
+    compile 'com.github.mezz:JustEnoughItems:1.13-SNAPSHOT'
+
     configurations.implementation.extendsFrom(configurations.extraLibs)
 }
 
 jar {
     appendix = "${project.mc_version}"
     manifest {
-        attributes(["Specification-Title": project.mod_id,
-                    "Specification-Vendor": "SilentChaos512",
-                    "Specification-Version": "25.0", // We are version 1 of the modlauncher specification
-                    "Implementation-Title": project.name,
-                    "Implementation-Version": "${version}",
-                    "Implementation-Vendor" :"SilentChaos512",
+        attributes(["Specification-Title"     : project.mod_id,
+                    "Specification-Vendor"    : "SilentChaos512",
+                    "Specification-Version"   : "25.0", // We are version 1 of the modlauncher specification
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : "${version}",
+                    "Implementation-Vendor"   : "SilentChaos512",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
     }
     from {
@@ -253,7 +268,7 @@ def getGitVersion() {
     def outStream = new ByteArrayOutputStream()
     def result = exec {
         executable = 'git'
-        args = [ 'describe', '--long' ]
+        args = ['describe', '--long']
         standardOutput = outStream
     }
 
