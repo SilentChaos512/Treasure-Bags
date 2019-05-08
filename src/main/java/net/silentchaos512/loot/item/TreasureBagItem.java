@@ -11,6 +11,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,7 +30,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TreasureBagItem extends ItemLootContainer {
-//    private static final String NBT_BAG_COLOR = "BagColor";
+    //    private static final String NBT_BAG_COLOR = "BagColor";
 //    private static final String NBT_BAG_OVERLAY_COLOR = "BagOverlayColor";
 //    private static final String NBT_BAG_STRING_COLOR = "BagStringColor";
     private static final String NBT_BAG_TYPE = "BagType";
@@ -62,8 +63,12 @@ public class TreasureBagItem extends ItemLootContainer {
 
     @Nullable
     public static IBagType getBagType(ItemStack stack) {
-        String typeStr = getData(stack).getString(NBT_BAG_TYPE);
+        String typeStr = getBagTypeString(stack);
         return BagTypeManager.getValue(new ResourceLocation(typeStr));
+    }
+
+    private static String getBagTypeString(ItemStack stack) {
+        return getData(stack).getString(NBT_BAG_TYPE);
     }
 
     /**
@@ -137,12 +142,33 @@ public class TreasureBagItem extends ItemLootContainer {
 
     @Override
     public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        // Bag type
         if (flagIn.isAdvanced()) {
             IBagType type = getBagType(stack);
             if (type != null) {
-                tooltip.add(new TextComponentString("Type: " + type.getId()));
+                tooltip.add(new TextComponentTranslation(this.getTranslationKey() + ".type", type.getId())
+                        .applyTextStyle(TextFormatting.YELLOW));
+            } else {
+                String typeStr = getBagTypeString(stack);
+                tooltip.add(new TextComponentTranslation(this.getTranslationKey() + ".unknownType")
+                        .applyTextStyle(TextFormatting.RED));
+                tooltip.add(new TextComponentTranslation(this.getTranslationKey() + ".type", typeStr)
+                        .applyTextStyle(TextFormatting.YELLOW));
             }
+        }
+
+        // Loot table (or whatever ItemLootContainer wants to do)
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+
+        // Display data pack ID
+        String typeStr = getBagTypeString(stack);
+        ResourceLocation typeName = ResourceLocation.tryCreate(typeStr);
+        if (typeName != null) {
+            tooltip.add(new TextComponentString(typeName.getNamespace())
+                    .applyTextStyle(TextFormatting.BLUE).applyTextStyle(TextFormatting.ITALIC));
+        } else {
+            tooltip.add(new TextComponentTranslation(this.getTranslationKey() + ".invalidType")
+                    .applyTextStyle(TextFormatting.RED));
         }
     }
 
