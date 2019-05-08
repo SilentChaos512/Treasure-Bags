@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.0] - 2019-05-08
 ### Added
 - Treasure bags can now be used as ingredients in recipes. See wiki for details.
 - Shaped and shapeless recipe types for treasure bags. This allows you to create recipes which craft specific treasure bags. You can, of course, combine this with treasure bag ingredients as well.
