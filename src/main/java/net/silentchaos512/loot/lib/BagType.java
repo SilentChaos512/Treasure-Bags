@@ -3,7 +3,7 @@ package net.silentchaos512.loot.lib;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.silentchaos512.utils.Color;
 
@@ -55,17 +55,17 @@ public final class BagType implements IBagType {
         public static BagType deserialize(ResourceLocation name, JsonObject json) {
             BagType result = new BagType(name);
 
-            String tableName = JsonUtils.getString(json, "lootTable");
+            String tableName = JSONUtils.getString(json, "lootTable");
             ResourceLocation lootTable = ResourceLocation.tryCreate(tableName);
             if (lootTable == null) {
                 throw new JsonParseException("Invalid loot table: " + tableName);
             }
             result.lootTable = lootTable;
 
-            result.customName = JsonUtils.getString(json, "displayName", "");
+            result.customName = JSONUtils.getString(json, "displayName", "");
             result.bagColor = Color.from(json, "bagColor", 0xFFFFFF).getColor();
             result.bagOverlayColor = Color.from(json, "bagOverlayColor", 0xFFFFFF).getColor();
-            result.visible = JsonUtils.getBoolean(json, "visible", true);
+            result.visible = JSONUtils.getBoolean(json, "visible", true);
 
             return result;
         }

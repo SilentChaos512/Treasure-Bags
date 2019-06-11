@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.IResourceManagerReloadListener;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.silentchaos512.loot.TreasureBags;
@@ -66,7 +66,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
                 ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
                 TreasureBags.LOGGER.info(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
 
-                JsonObject json = JsonUtils.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
+                JsonObject json = JSONUtils.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
                 if (json == null) {
                     TreasureBags.LOGGER.error(MARKER, "Could not load bag type {} as it's null or empty", name);
                 } else {

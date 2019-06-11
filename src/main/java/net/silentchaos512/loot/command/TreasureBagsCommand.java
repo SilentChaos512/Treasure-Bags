@@ -11,12 +11,12 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.command.arguments.ResourceLocationArgument;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.silentchaos512.lib.util.PlayerUtils;
 import net.silentchaos512.loot.init.ModItems;
 import net.silentchaos512.loot.lib.BagTypeManager;
@@ -67,7 +67,7 @@ public final class TreasureBagsCommand {
             return 0;
         }
 
-        for (EntityPlayerMP player : EntityArgument.getPlayers(context, "players")) {
+        for (ServerPlayerEntity player : EntityArgument.getPlayers(context, "players")) {
             ItemStack stack = ModItems.treasureBag.stackOfType(bagType, bagCount);
             PlayerUtils.giveItem(player, stack);
             context.getSource().sendFeedback(translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
@@ -80,11 +80,11 @@ public final class TreasureBagsCommand {
         String str = BagTypeManager.getValues().stream()
                 .map(type -> type.getId().toString())
                 .collect(Collectors.joining(", "));
-        context.getSource().sendFeedback(new TextComponentString(str), true);
+        context.getSource().sendFeedback(new StringTextComponent(str), true);
         return 1;
     }
 
     private static ITextComponent translate(String key, Object... args) {
-        return new TextComponentTranslation("command.treasurebags." + key, args);
+        return new TranslationTextComponent("command.treasurebags." + key, args);
     }
 }

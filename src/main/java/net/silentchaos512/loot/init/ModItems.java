@@ -1,13 +1,11 @@
 package net.silentchaos512.loot.init;
 
-import net.silentchaos512.loot.TreasureBags;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.silentchaos512.loot.TreasureBags;
 import net.silentchaos512.loot.item.TreasureBagItem;
 
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ import java.util.Collection;
 public final class ModItems {
     public static TreasureBagItem treasureBag;
 
-    static final Collection<ItemBlock> blocksToRegister = new ArrayList<>();
+    static final Collection<BlockItem> blocksToRegister = new ArrayList<>();
 
     private ModItems() {}
 
@@ -36,11 +34,5 @@ public final class ModItems {
         item.setRegistryName(id);
         ForgeRegistries.ITEMS.register(item);
         return item;
-    }
-
-    private static <E extends Enum<E> & IItemProvider & IStringSerializable> void registerFromEnum(Class<E> enumClass) {
-        for (E e : enumClass.getEnumConstants()) {
-            register(e.getName(), e.asItem());
-        }
     }
 }

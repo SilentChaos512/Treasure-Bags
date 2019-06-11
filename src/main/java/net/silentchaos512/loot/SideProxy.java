@@ -1,7 +1,7 @@
 package net.silentchaos512.loot;
 
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.item.crafting.RecipeSerializers;
+import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -29,8 +29,8 @@ class SideProxy {
         ModLoot.init();
 
         // Recipes and ingredients
-        RecipeSerializers.register(ShapedTreasureBagRecipe.SERIALIZER);
-        RecipeSerializers.register(ShapelessTreasureBagRecipe.SERIALIZER);
+        IRecipeSerializer.func_222156_a("treasurebags:shaped_bag", ShapedTreasureBagRecipe.SERIALIZER);
+        IRecipeSerializer.func_222156_a("treasurebags:shapeless_bag", ShapelessTreasureBagRecipe.SERIALIZER);
         CraftingHelper.register(TreasureBagIngredient.Serializer.NAME, TreasureBagIngredient.Serializer.INSTANCE);
 
         // Add listeners for common events
@@ -58,7 +58,7 @@ class SideProxy {
     }
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().addReloadListener(BagTypeManager.INSTANCE);
+        event.getServer().getResourceManager().func_219534_a(BagTypeManager.INSTANCE);
         TreasureBagsCommand.register(event.getServer().getCommandManager().getDispatcher());
     }
 

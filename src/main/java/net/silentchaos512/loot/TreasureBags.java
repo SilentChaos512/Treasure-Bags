@@ -15,7 +15,7 @@ import java.util.Random;
 public final class TreasureBags {
     public static final String MOD_ID = "treasurebags";
     public static final String MOD_NAME = "Treasure Bags";
-    public static final String VERSION = "0.2.0";
+    public static final String VERSION = "0.3.0";
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
     public static final Random RANDOM = new Random();

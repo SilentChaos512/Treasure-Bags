@@ -1,7 +1,7 @@
 package net.silentchaos512.loot.events;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,15 +21,15 @@ public final class ServerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerJoinServer(PlayerEvent.PlayerLoggedInEvent event) {
-        EntityPlayer player = event.getPlayer();
-        if (!(player instanceof EntityPlayerMP)) return;
+        PlayerEntity player = event.getPlayer();
+        if (!(player instanceof ServerPlayerEntity)) return;
 
-        EntityPlayerMP playerMP = (EntityPlayerMP) player;
+        ServerPlayerEntity playerMP = (ServerPlayerEntity) player;
 
         sendBagTypesToClient(playerMP);
     }
 
-    private static void sendBagTypesToClient(EntityPlayerMP playerMP) {
+    private static void sendBagTypesToClient(ServerPlayerEntity playerMP) {
         Collection<IBagType> bagTypes = BagTypeManager.getValues();
         TreasureBags.LOGGER.info("Sending {} bag types to {}", bagTypes.size(), playerMP.getScoreboardName());
         SyncBagTypesPacket msg = new SyncBagTypesPacket(bagTypes);

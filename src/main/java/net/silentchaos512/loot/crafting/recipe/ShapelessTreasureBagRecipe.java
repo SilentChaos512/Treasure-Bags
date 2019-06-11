@@ -1,6 +1,6 @@
 package net.silentchaos512.loot.crafting.recipe;
 
-import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.ShapelessRecipe;
@@ -27,7 +27,7 @@ public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
     }
 
     @Override
-    public boolean matches(IInventory inv, World worldIn) {
+    public boolean matches(CraftingInventory inv, World worldIn) {
         return this.getBaseRecipe().matches(inv, worldIn);
     }
 
@@ -38,7 +38,7 @@ public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(IInventory inv) {
+    public ItemStack getCraftingResult(CraftingInventory inv) {
         ItemStack result = this.getRecipeOutput();
         if (!(result.getItem() instanceof TreasureBagItem)) {
             TreasureBags.LOGGER.warn("Result of a treasure bag recipe is not a treasure bag? Recipe '{}' crafts {}",

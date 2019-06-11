@@ -97,11 +97,11 @@ configurations {
 dependencies {
     minecraft "net.minecraftforge:forge:${project.forge_version}"
 
-    compile "net.silentchaos512:silent-lib:${project.sl_version}"
+    compile "net.silentchaos512:silent-lib-${project.mc_version}:${project.sl_version}"
 
 //    deobf "mezz.jei:jei-${project.mc_version}:${project.jei_version}"
 //    compile 'com.github.mezz:JustEnoughItems:v5.0.0'
-    compile 'com.github.mezz:JustEnoughItems:1.13-SNAPSHOT'
+//    compile 'com.github.mezz:JustEnoughItems:1.13-SNAPSHOT'
 
     configurations.implementation.extendsFrom(configurations.extraLibs)
 }
@@ -111,7 +111,7 @@ jar {
     manifest {
         attributes(["Specification-Title"     : project.mod_id,
                     "Specification-Vendor"    : "SilentChaos512",
-                    "Specification-Version"   : "25.0", // We are version 1 of the modlauncher specification
+                    "Specification-Version"   : "0.3",
                     "Implementation-Title"    : project.name,
                     "Implementation-Version"  : "${version}",
                     "Implementation-Vendor"   : "SilentChaos512",
@@ -211,9 +211,9 @@ curseforge {
 
 publishing {
     publications {
-        lootBags(MavenPublication) {
+        publication(MavenPublication) {
             groupId 'net.silentchaos512'
-            artifactId 'loot-bags'
+            artifactId 'treasure-bags'
             version "${versionInfo['version_short']}".toString()
 
             from components.java
@@ -227,17 +227,17 @@ publishing {
 bintray {
     user = secret.BINTRAY_USER ?: System.getenv('BINTRAY_USER')
     key = secret.BINTRAY_KEY ?: System.getenv('BINTRAY_KEY')
-    publications = ['lootBags']
+    publications = ['publication']
 
     pkg {
-        repo = 'loot-bags'
-        name = 'loot-bags'
+        repo = 'treasure-bags'
+        name = 'treasure-bags'
         licenses = ["LGPL-3.0"]
-        vcsUrl = 'https://github.com/SilentChaos512/LootBagMod.git'
+        vcsUrl = 'https://github.com/SilentChaos512/Treasure-Bags.git'
 
         version {
             name = "${versionInfo['version_short']}".toString()
-            desc = "Loot Bag Mod (${project.mc_version}) ${versionInfo['version_short']}".toString()
+            desc = "Treasure Bags (${project.mc_version}) ${versionInfo['version_short']}".toString()
             released = new Date()
             vcsTag = "v${versionInfo['version_short']}".toString()
         }

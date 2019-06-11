@@ -1,15 +1,17 @@
 package net.silentchaos512.loot.events;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
+import net.minecraft.world.storage.loot.LootParameterSets;
+import net.minecraft.world.storage.loot.LootParameters;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,9 +29,9 @@ public final class EventHandler {
     @SubscribeEvent
     public static void onLivingDrops(LivingDropsEvent event) {
         // Mostly copied from Scaling Health
-        if (!(event.getEntity() instanceof EntityLivingBase)) return;
+        if (!(event.getEntity() instanceof LivingEntity)) return;
 
-        EntityLivingBase entity = (EntityLivingBase) event.getEntity();
+        LivingEntity entity = (LivingEntity) event.getEntity();
         World world = entity.world;
         if (world.isRemote) return;
         MinecraftServer server = world.getServer();
@@ -38,7 +40,7 @@ public final class EventHandler {
         // Mob loot disabled?
         if (!world.getGameRules().getBoolean("doMobLoot")) return;
 
-        EntityPlayer player = getPlayerThatCausedDeath(event.getSource());
+        PlayerEntity player = getPlayerThatCausedDeath(event.getSource());
 
         // Get the bonus drops loot table for this mob type
         MobType type = MobType.from(entity);
@@ -48,11 +50,16 @@ public final class EventHandler {
         }
 
         LootTable lootTable = server.getLootTableManager().getLootTableFromLocation(type.getLootTable());
-        LootContext.Builder contextBuilder = new LootContext.Builder((WorldServer) world)
-                .withDamageSource(event.getSource())
-                .withLootedEntity(entity);
-        if (player != null) contextBuilder.withLuck(player.getLuck()).withPlayer(player);
-        List<ItemStack> list = lootTable.generateLootForPools(TreasureBags.RANDOM, contextBuilder.build());
+        LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld) world)
+                .withParameter(LootParameters.field_216281_a, entity)
+                .withParameter(LootParameters.field_216286_f, entity.getPosition())
+                .withParameter(LootParameters.field_216283_c, event.getSource())
+                .withNullableParameter(LootParameters.field_216284_d, player)
+                .withNullableParameter(LootParameters.field_216285_e, event.getSource().getImmediateSource());
+        if (player != null) {
+            contextBuilder.withLuck(player.getLuck()).withParameter(LootParameters.field_216284_d, player);
+        }
+        List<ItemStack> list = lootTable.func_216113_a(contextBuilder.build(LootParameterSets.field_216263_d));
         list.forEach(stack -> event.getDrops().add(entity.entityDropItem(stack)));
     }
 
@@ -65,20 +72,20 @@ public final class EventHandler {
      */
     @SuppressWarnings("ChainOfInstanceofChecks")
     @Nullable
-    private static EntityPlayer getPlayerThatCausedDeath(DamageSource source) {
+    private static PlayerEntity getPlayerThatCausedDeath(DamageSource source) {
         if (source == null) return null;
 
         // Player is true source?
         Entity entitySource = source.getTrueSource();
-        if (entitySource instanceof EntityPlayer) {
-            return (EntityPlayer) entitySource;
+        if (entitySource instanceof PlayerEntity) {
+            return (PlayerEntity) entitySource;
         }
 
         // Player's pet is true source?
-        if (entitySource instanceof EntityTameable) {
-            EntityTameable tamed = (EntityTameable) entitySource;
-            if (tamed.isTamed() && tamed.getOwner() instanceof EntityPlayer) {
-                return (EntityPlayer) tamed.getOwner();
+        if (entitySource instanceof TameableEntity) {
+            TameableEntity tamed = (TameableEntity) entitySource;
+            if (tamed.isTamed() && tamed.getOwner() instanceof PlayerEntity) {
+                return (PlayerEntity) tamed.getOwner();
             }
         }
 
