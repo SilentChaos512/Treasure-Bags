@@ -29,8 +29,8 @@ class SideProxy {
         ModLoot.init();
 
         // Recipes and ingredients
-        IRecipeSerializer.func_222156_a("treasurebags:shaped_bag", ShapedTreasureBagRecipe.SERIALIZER);
-        IRecipeSerializer.func_222156_a("treasurebags:shapeless_bag", ShapelessTreasureBagRecipe.SERIALIZER);
+        IRecipeSerializer.register("treasurebags:shaped_bag", ShapedTreasureBagRecipe.SERIALIZER);
+        IRecipeSerializer.register("treasurebags:shapeless_bag", ShapelessTreasureBagRecipe.SERIALIZER);
         CraftingHelper.register(TreasureBagIngredient.Serializer.NAME, TreasureBagIngredient.Serializer.INSTANCE);
 
         // Add listeners for common events
@@ -58,7 +58,7 @@ class SideProxy {
     }
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().func_219534_a(BagTypeManager.INSTANCE);
+        event.getServer().getResourceManager().addReloadListener(BagTypeManager.INSTANCE);
         TreasureBagsCommand.register(event.getServer().getCommandManager().getDispatcher());
     }
 

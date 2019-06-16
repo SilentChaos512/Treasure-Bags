@@ -51,15 +51,15 @@ public final class EventHandler {
 
         LootTable lootTable = server.getLootTableManager().getLootTableFromLocation(type.getLootTable());
         LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld) world)
-                .withParameter(LootParameters.field_216281_a, entity)
-                .withParameter(LootParameters.field_216286_f, entity.getPosition())
-                .withParameter(LootParameters.field_216283_c, event.getSource())
-                .withNullableParameter(LootParameters.field_216284_d, player)
-                .withNullableParameter(LootParameters.field_216285_e, event.getSource().getImmediateSource());
+                .withParameter(LootParameters.THIS_ENTITY, entity)
+                .withParameter(LootParameters.POSITION, entity.getPosition())
+                .withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
+                .withNullableParameter(LootParameters.KILLER_ENTITY, player)
+                .withNullableParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getImmediateSource());
         if (player != null) {
-            contextBuilder.withLuck(player.getLuck()).withParameter(LootParameters.field_216284_d, player);
+            contextBuilder.withLuck(player.getLuck());
         }
-        List<ItemStack> list = lootTable.func_216113_a(contextBuilder.build(LootParameterSets.field_216263_d));
+        List<ItemStack> list = lootTable.generate(contextBuilder.build(LootParameterSets.ENTITY));
         list.forEach(stack -> event.getDrops().add(entity.entityDropItem(stack)));
     }
 

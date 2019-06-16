@@ -13,7 +13,6 @@ import net.silentchaos512.loot.lib.IBagType;
 
 public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
     public static final ExtendedShapelessRecipe.Serializer<ShapelessTreasureBagRecipe> SERIALIZER = new Serializer<>(
-            TreasureBags.getId("shapeless_bag"),
             ShapelessTreasureBagRecipe::new,
             (json, recipe) -> recipe.typeName = IBagType.nameFromJson(json.get("result").getAsJsonObject()),
             (buffer, recipe) -> recipe.typeName = buffer.readResourceLocation(),
