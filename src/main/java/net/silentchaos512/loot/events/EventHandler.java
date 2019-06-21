@@ -55,6 +55,7 @@ public final class EventHandler {
                 .withParameter(LootParameters.POSITION, entity.getPosition())
                 .withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
                 .withNullableParameter(LootParameters.KILLER_ENTITY, player)
+                .withNullableParameter(LootParameters.LAST_DAMAGE_PLAYER, player)
                 .withNullableParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getImmediateSource());
         if (player != null) {
             contextBuilder.withLuck(player.getLuck());
