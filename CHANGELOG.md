@@ -3,6 +3,9 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+JEI plugin is up to date. Recommended Forge is 26.0.51 or later.
+
 ## [0.3.3] - 2019-06-20
 ### Fixed
 - Entity group loot tables not working

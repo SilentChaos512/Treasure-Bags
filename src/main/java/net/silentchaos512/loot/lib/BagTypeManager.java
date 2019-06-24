@@ -64,7 +64,9 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
             try (IResource iresource = resourceManager.getResource(id)) {
                 String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
                 ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
-                TreasureBags.LOGGER.info(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
+                if (TreasureBags.LOGGER.isTraceEnabled()) {
+                    TreasureBags.LOGGER.trace(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
+                }
 
                 JsonObject json = JSONUtils.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
                 if (json == null) {

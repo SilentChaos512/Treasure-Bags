@@ -1,6 +1,8 @@
 package net.silentchaos512.loot;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,22 +41,19 @@ class SideProxy {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::imcProcess);
 
         // Add listeners for registry events
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModBlocks::registerAll);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModItems::registerAll);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, ModBlocks::registerAll);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, ModItems::registerAll);
 
         MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        TreasureBags.LOGGER.debug("SideProxy commonSetup");
     }
 
     private void imcEnqueue(InterModEnqueueEvent event) {
-        TreasureBags.LOGGER.debug("SideProxy imcEnqueue");
     }
 
     private void imcProcess(InterModProcessEvent event) {
-        TreasureBags.LOGGER.debug("SideProxy imcProcess");
     }
 
     private void serverAboutToStart(FMLServerAboutToStartEvent event) {
@@ -64,13 +63,11 @@ class SideProxy {
 
     static class Client extends SideProxy {
         Client() {
-            TreasureBags.LOGGER.debug("SideProxy.Client init");
             FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
-            MinecraftForge.EVENT_BUS.addListener(this::onItemColors);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onItemColors);
         }
 
         private void clientSetup(FMLClientSetupEvent event) {
-            TreasureBags.LOGGER.debug("SideProxy.Client clientSetup");
         }
 
         private void onItemColors(ColorHandlerEvent.Item event) {
@@ -83,19 +80,17 @@ class SideProxy {
             try {
                 colors.register(TreasureBagItem::getColor, ModItems.treasureBag);
             } catch (NullPointerException ex) {
-                TreasureBags.LOGGER.error("Something went horribly wrong with ItemColors (Forge bug?)", ex);
+                TreasureBags.LOGGER.error("Something went horribly wrong with ItemColors", ex);
             }
         }
     }
 
     static class Server extends SideProxy {
         Server() {
-            TreasureBags.LOGGER.debug("SideProxy.Server init");
             FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverSetup);
         }
 
         private void serverSetup(FMLDedicatedServerSetupEvent event) {
-            TreasureBags.LOGGER.debug("SideProxy.Server serverSetup");
         }
     }
 }

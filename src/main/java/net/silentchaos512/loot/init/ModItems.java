@@ -19,13 +19,9 @@ public final class ModItems {
     private ModItems() {}
 
     public static void registerAll(RegistryEvent.Register<Item> event) {
-        // Workaround for Forge event bus bug
-        if (!event.getName().equals(ForgeRegistries.ITEMS.getRegistryName())) return;
-
         // Register block items first
         blocksToRegister.forEach(ForgeRegistries.ITEMS::register);
 
-        // Then register your items here
         treasureBag = register("treasure_bag", new TreasureBagItem());
     }
 

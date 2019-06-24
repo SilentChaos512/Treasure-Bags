@@ -13,8 +13,6 @@ public final class ModBlocks {
     private ModBlocks() {}
 
     public static void registerAll(RegistryEvent.Register<Block> event) {
-        // Workaround for Forge event bus bug
-        if (!event.getName().equals(ForgeRegistries.BLOCKS.getRegistryName())) return;
     }
 
     private static <T extends Block> T register(String name, T block) {
