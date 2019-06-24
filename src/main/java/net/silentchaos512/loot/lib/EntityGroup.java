@@ -12,7 +12,7 @@ import java.util.Locale;
  * A rough group for mobs. Very similar to what Scaling Health uses, but no blights and every type
  * has a loot table.
  */
-public enum MobType {
+public enum EntityGroup {
     PEACEFUL,
     HOSTILE,
     BOSS,
@@ -20,11 +20,11 @@ public enum MobType {
 
     private final ResourceLocation lootTable;
 
-    MobType() {
+    EntityGroup() {
         lootTable = TreasureBags.getId("entity_group/" + this.name().toLowerCase(Locale.ROOT));
     }
 
-    public static MobType from(LivingEntity entity) {
+    public static EntityGroup from(LivingEntity entity) {
         if (entity instanceof PlayerEntity)
             return PLAYER;
         if (!entity.isNonBoss())

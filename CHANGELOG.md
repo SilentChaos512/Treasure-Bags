@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 JEI plugin is up to date. Recommended Forge is 26.0.51 or later.
+### Added
+- New layer to treasure bag model. Color can be set with `bagStringColor`.
+### Changed
+- Cleanup up log output
 
 ## [0.3.3] - 2019-06-20
 ### Fixed

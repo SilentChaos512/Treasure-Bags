@@ -36,7 +36,7 @@ public class TreasureBagItem extends LootContainerItem {
 //    private static final String NBT_CUSTOM_NAME = "CustomName";
 
     public TreasureBagItem() {
-        super(new ResourceLocation(TreasureBags.MOD_ID, "default_bag"), true, new Properties().group(ItemGroup.MISC));
+        super(TreasureBags.getId("default_bag"), true, new Properties().group(ItemGroup.MISC));
     }
 
     public ItemStack stackOfType(IBagType type) {
@@ -106,22 +106,6 @@ public class TreasureBagItem extends LootContainerItem {
         return type.getLootTable();
     }
 
-    public static int getBagColor(ItemStack stack) {
-        IBagType type = getBagType(stack);
-        if (type != null) {
-            return type.getBagColor();
-        }
-        return 0xFFFFFF;
-    }
-
-    public static int getBagOverlayColor(ItemStack stack) {
-        IBagType type = getBagType(stack);
-        if (type != null) {
-            return type.getBagOverlayColor();
-        }
-        return 0xFFFFFF;
-    }
-
     @Nonnull
     @Override
     public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
@@ -134,8 +118,12 @@ public class TreasureBagItem extends LootContainerItem {
 
     @OnlyIn(Dist.CLIENT)
     public static int getColor(ItemStack stack, int tintIndex) {
-        if (tintIndex == 0) return getBagColor(stack);
-        if (tintIndex == 1) return getBagOverlayColor(stack);
+        IBagType bagType = getBagType(stack);
+        if (bagType != null) {
+            if (tintIndex == 0) return bagType.getBagColor();
+            if (tintIndex == 1) return bagType.getBagOverlayColor();
+            if (tintIndex == 2) return bagType.getBagStringColor();
+        }
         return 0xFFFFFF;
     }
 

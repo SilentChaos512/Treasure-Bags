@@ -14,6 +14,8 @@ public interface IBagType {
 
     int getBagOverlayColor();
 
+    int getBagStringColor();
+
     String getCustomName();
 
     ResourceLocation getLootTable();

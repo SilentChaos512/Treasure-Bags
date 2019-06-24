@@ -11,6 +11,7 @@ public final class BagType implements IBagType {
     private final ResourceLocation name;
     private int bagColor;
     private int bagOverlayColor;
+    private int bagStringColor;
     private String customName;
     private ResourceLocation lootTable;
     private boolean visible;
@@ -32,6 +33,11 @@ public final class BagType implements IBagType {
     @Override
     public int getBagOverlayColor() {
         return bagOverlayColor;
+    }
+
+    @Override
+    public int getBagStringColor() {
+        return bagStringColor;
     }
 
     @Override
@@ -65,6 +71,7 @@ public final class BagType implements IBagType {
             result.customName = JSONUtils.getString(json, "displayName", "");
             result.bagColor = Color.from(json, "bagColor", 0xFFFFFF).getColor();
             result.bagOverlayColor = Color.from(json, "bagOverlayColor", 0xFFFFFF).getColor();
+            result.bagStringColor = Color.from(json, "bagStringColor", 0xFFFFFF).getColor();
             result.visible = JSONUtils.getBoolean(json, "visible", true);
 
             return result;
@@ -76,6 +83,8 @@ public final class BagType implements IBagType {
             bagType.customName = buffer.readString(255);
             bagType.bagColor = buffer.readVarInt();
             bagType.bagOverlayColor = buffer.readVarInt();
+            bagType.bagStringColor = buffer.readVarInt();
+            bagType.visible = buffer.readBoolean();
             return bagType;
         }
 
@@ -85,6 +94,8 @@ public final class BagType implements IBagType {
             buffer.writeString(bagType.getCustomName());
             buffer.writeVarInt(bagType.getBagColor());
             buffer.writeVarInt(bagType.getBagOverlayColor());
+            buffer.writeVarInt(bagType.getBagStringColor());
+            buffer.writeBoolean(bagType.isVisible());
         }
     }
 }

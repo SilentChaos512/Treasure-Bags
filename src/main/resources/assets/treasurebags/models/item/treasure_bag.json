@@ -2,6 +2,7 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "treasurebags:item/treasure_bag",
-    "layer1": "treasurebags:item/treasure_bag_overlay"
+    "layer1": "treasurebags:item/treasure_bag_overlay",
+    "layer2": "treasurebags:item/treasure_bag_string"
   }
 }
