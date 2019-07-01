@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.ServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
@@ -38,7 +39,7 @@ public final class EventHandler {
         if (server == null) return;
 
         // Mob loot disabled?
-        if (!world.getGameRules().getBoolean("doMobLoot")) return;
+        if (!world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) return;
 
         PlayerEntity player = getPlayerThatCausedDeath(event.getSource());
 
