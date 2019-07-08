@@ -4,12 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.resources.IResourceManagerReloadListener;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.silentchaos512.loot.TreasureBags;
 import net.silentchaos512.loot.item.TreasureBagItem;
@@ -21,6 +26,7 @@ import org.apache.logging.log4j.MarkerManager;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,6 +39,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
     private static final String RESOURCES_PATH = "treasurebags/bag_types";
 
     private static final Map<ResourceLocation, IBagType> MAP = new LinkedHashMap<>();
+    private static int fileCount;
 
     private BagTypeManager() {}
 
@@ -59,8 +66,10 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         if (resources.isEmpty()) return;
 
         MAP.clear();
+        fileCount = 0;
 
         for (ResourceLocation id : resources) {
+            ++fileCount;
             try (IResource iresource = resourceManager.getResource(id)) {
                 String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
                 ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
@@ -95,5 +104,41 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         packet.getBagTypes().forEach(type -> MAP.put(type.getId(), type));
         TreasureBags.LOGGER.info("Read {} bag types from server", MAP.size());
         context.get().setPacketHandled(true);
+    }
+
+    public static Collection<ITextComponent> getErrorMessages(ServerPlayerEntity player) {
+        Collection<ITextComponent> messages = new ArrayList<>();
+
+        // Bag type files that failed to load
+        if (fileCount != MAP.size()) {
+            int errorCount = fileCount - MAP.size();
+            String counter = errorCount + " bag type file" + (errorCount > 1 ? "s" : "");
+            ITextComponent prefix = new StringTextComponent("[Treasure Bags] ").applyTextStyle(TextFormatting.YELLOW);
+            messages.add(prefix.appendSibling(new StringTextComponent(counter + " failed to load! Check your log")));
+        }
+
+        // Loot tables that failed to load or are missing
+        int missingLootTables = countMissingLootTables(player);
+        if (missingLootTables > 0) {
+            String counter = missingLootTables == 1
+                    ? "1 bag type has a missing or invalid loot table"
+                    : missingLootTables + " bag types have missing or invalid loot tables";
+            messages.add(errorMessage(counter));
+        }
+
+        return messages;
+    }
+
+    private static int countMissingLootTables(ServerPlayerEntity player) {
+        MinecraftServer server = player.world.getServer();
+        if (server == null) return 0;
+
+        Collection<ResourceLocation> lootTables = server.getLootTableManager().func_215304_a();
+        return (int) MAP.values().stream().filter(bagType -> !lootTables.contains(bagType.getLootTable())).count();
+    }
+
+    private static ITextComponent errorMessage(String str) {
+        return new StringTextComponent("[Treasure Bags] ").applyTextStyle(TextFormatting.YELLOW)
+                .appendSibling(new StringTextComponent(str).applyTextStyle(TextFormatting.WHITE));
     }
 }

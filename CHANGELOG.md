@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Bag types that fail to load or have missing/invalid loot tables are now counted and mentioned to players when they log in. This should make data pack issues more obvious.
+
 ## [1.0.0] - 2019-07-01
 Updated to 1.14.3
 

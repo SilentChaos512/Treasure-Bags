@@ -27,6 +27,7 @@ public final class ServerEvents {
         ServerPlayerEntity playerMP = (ServerPlayerEntity) player;
 
         sendBagTypesToClient(playerMP);
+        BagTypeManager.getErrorMessages(playerMP).forEach(playerMP::sendMessage);
     }
 
     private static void sendBagTypesToClient(ServerPlayerEntity playerMP) {
