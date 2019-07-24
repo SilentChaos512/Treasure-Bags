@@ -2,14 +2,18 @@ package net.silentchaos512.loot;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.silentchaos512.lib.event.InitialSpawnItems;
+import net.silentchaos512.lib.util.LootUtils;
 import net.silentchaos512.loot.command.TreasureBagsCommand;
 import net.silentchaos512.loot.crafting.ingredient.TreasureBagIngredient;
 import net.silentchaos512.loot.crafting.recipe.ShapedTreasureBagRecipe;
@@ -21,7 +25,11 @@ import net.silentchaos512.loot.item.TreasureBagItem;
 import net.silentchaos512.loot.lib.BagTypeManager;
 import net.silentchaos512.loot.network.Network;
 
+import java.util.Collections;
+
 class SideProxy {
+    private static final ResourceLocation STARTING_INVENTORY = TreasureBags.getId("starting_inventory");
+
     SideProxy() {
         TreasureBags.LOGGER.debug("SideProxy init");
 
@@ -48,6 +56,12 @@ class SideProxy {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
+        InitialSpawnItems.add(STARTING_INVENTORY, p -> {
+            if (p instanceof ServerPlayerEntity) {
+                return LootUtils.gift(STARTING_INVENTORY, (ServerPlayerEntity) p);
+            }
+            return Collections.emptyList();
+        });
     }
 
     private void imcEnqueue(InterModEnqueueEvent event) {

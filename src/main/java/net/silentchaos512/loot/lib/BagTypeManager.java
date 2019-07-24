@@ -133,7 +133,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         MinecraftServer server = player.world.getServer();
         if (server == null) return 0;
 
-        Collection<ResourceLocation> lootTables = server.getLootTableManager().func_215304_a();
+        Collection<ResourceLocation> lootTables = server.getLootTableManager().getLootTableKeys();
         return (int) MAP.values().stream().filter(bagType -> !lootTables.contains(bagType.getLootTable())).count();
     }
 

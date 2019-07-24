@@ -1,0 +1,8 @@
+{
+    "displayName": "First Spawn Bag",
+    "lootTable": "treasurebags:bags/spawn",
+    "bagColor": "limegreen",
+    "bagOverlayColor": "skyblue",
+    "bagStringColor": "gold",
+    "visible": true
+}

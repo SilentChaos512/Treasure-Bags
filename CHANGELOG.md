@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Bag types that fail to load or have missing/invalid loot tables are now counted and mentioned to players when they log in. This should make data pack issues more obvious.
+- A loot table (`treasurebags:starting_inventory`) which is used once when a player first joins a server. By default, this gives a single treasure bag of type `treasurebags:spawn`. Modifying the bag's loot table (`treasurebags:bags/spawn`) is recommended if you want to give new players items, but you could modify the starting inventory table if you prefer.
 
 ## [1.0.0] - 2019-07-01
 Updated to 1.14.3

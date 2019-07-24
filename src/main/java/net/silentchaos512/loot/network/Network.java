@@ -28,5 +28,5 @@ public final class Network {
 
     private Network() {}
 
-    public static void init() { }
+    public static void init() {}
 }
