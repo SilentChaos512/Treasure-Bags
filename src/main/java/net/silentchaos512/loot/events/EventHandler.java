@@ -2,6 +2,7 @@ package net.silentchaos512.loot.events;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -62,7 +63,7 @@ public final class EventHandler {
             contextBuilder.withLuck(player.getLuck());
         }
         List<ItemStack> list = lootTable.generate(contextBuilder.build(LootParameterSets.ENTITY));
-        list.forEach(stack -> event.getDrops().add(entity.entityDropItem(stack)));
+        list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.posX, entity.posY, entity.posZ, stack)));
     }
 
     /**
