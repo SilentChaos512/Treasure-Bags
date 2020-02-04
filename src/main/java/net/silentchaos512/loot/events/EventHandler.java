@@ -63,7 +63,7 @@ public final class EventHandler {
             contextBuilder.withLuck(player.getLuck());
         }
         List<ItemStack> list = lootTable.generate(contextBuilder.build(LootParameterSets.ENTITY));
-        list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.posX, entity.posY, entity.posZ, stack)));
+        list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.getPosX(), entity.getPosY(), entity.getPosZ(), stack)));
     }
 
     /**

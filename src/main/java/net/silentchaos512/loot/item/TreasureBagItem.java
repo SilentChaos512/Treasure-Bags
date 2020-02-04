@@ -184,7 +184,7 @@ public class TreasureBagItem extends LootContainerItem {
         ServerPlayerEntity playerMP = (ServerPlayerEntity) playerIn;
 
         // Generate items from loot table, give to player.
-        boolean openWholeStack = playerMP.isSneaking();
+        boolean openWholeStack = playerMP.isCrouching();
         Collection<ItemStack> lootDrops = getDropsFromStack(heldItem, playerMP, openWholeStack);
         if (lootDrops.isEmpty()) {
             TreasureBags.LOGGER.warn("No drops from bag, is the loot table valid? {}, table={}", heldItem, getLootTable(heldItem));
@@ -196,7 +196,7 @@ public class TreasureBagItem extends LootContainerItem {
         });
 
         // Play item pickup sound...
-        playerMP.world.playSound(null, playerMP.posX, playerMP.posY, playerMP.posZ,
+        playerMP.world.playSound(null, playerMP.getPosX(), playerMP.getPosY(), playerMP.getPosZ(),
                 SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
                 ((playerMP.getRNG().nextFloat() - playerMP.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
         heldItem.shrink(openWholeStack ? heldItem.getCount() : 1);
