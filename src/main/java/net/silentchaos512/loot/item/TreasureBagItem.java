@@ -1,6 +1,7 @@
 package net.silentchaos512.loot.item;
 
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -16,8 +17,8 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.silentchaos512.lib.item.LootContainerItem;
-import net.silentchaos512.lib.util.PlayerUtils;
 import net.silentchaos512.loot.TreasureBags;
+import net.silentchaos512.loot.config.Config;
 import net.silentchaos512.loot.lib.BagTypeManager;
 import net.silentchaos512.loot.lib.IBagType;
 
@@ -191,7 +192,13 @@ public class TreasureBagItem extends LootContainerItem {
             return new ActionResult<>(ActionResultType.FAIL, heldItem);
         }
         lootDrops.forEach(stack -> {
-            PlayerUtils.giveItem(playerMP, stack);
+            ItemStack copy = stack.copy();
+            if (!playerIn.inventory.addItemStackToInventory(copy) || Config.GENERAL.alwaysSpawnItems.get()) {
+                ItemEntity entityItem = new ItemEntity(playerIn.world, playerIn.getPosX(), playerIn.getPosYHeight(0.5), playerIn.getPosZ(), copy);
+                entityItem.setNoPickupDelay();
+                entityItem.setOwnerId(playerIn.getUniqueID());
+                playerIn.world.addEntity(entityItem);
+            }
             listItemReceivedInChat(playerMP, stack);
         });
 
