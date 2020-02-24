@@ -8,24 +8,26 @@ public class Config {
     private static final ConfigSpecWrapper WRAPPER = ConfigSpecWrapper.create(
             FMLPaths.CONFIGDIR.get().resolve("treasurebags-common.toml"));
 
-            public static final General GENERAL = new General(WRAPPER);
+    public static final General GENERAL = new General(WRAPPER);
 
-            public static class General {
+    public static class General {
 
-                public BooleanValue alwaysSpawnItems;
+        public BooleanValue alwaysSpawnItems;
 
 
-                General(ConfigSpecWrapper wrapper) {
-                    alwaysSpawnItems = wrapper
-                            .builder("item.treasurebag.alwaysSpawnItems")
-                            .comment("If true, treasure bags will always spawn items on top of the player.",
-                                    "Otherwise this only happens if the player's inventory is full",
-                                    "Useful for bag-type items; dankstorage, backpacks")
-                            .define(false);
-                }
+        General(ConfigSpecWrapper wrapper) {
+            alwaysSpawnItems = wrapper
+                    .builder("item.treasurebag.alwaysSpawnItems")
+                    .comment("If true, treasure bags will always spawn items on top of the player.",
+                            "Otherwise this only happens if the player's inventory is full",
+                            "Useful for bag-type items; Dank Storage, SGems Gem Bag, backpacks")
+                    .define(false);
+        }
 
-            }
-    private Config() {}
+    }
+
+    private Config() {
+    }
 
     public static void init() {
         WRAPPER.validate();

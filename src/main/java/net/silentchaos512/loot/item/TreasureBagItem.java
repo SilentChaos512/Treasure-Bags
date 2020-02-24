@@ -193,7 +193,7 @@ public class TreasureBagItem extends LootContainerItem {
         }
         lootDrops.forEach(stack -> {
             ItemStack copy = stack.copy();
-            if (!playerIn.inventory.addItemStackToInventory(copy) || Config.GENERAL.alwaysSpawnItems.get()) {
+            if (Config.GENERAL.alwaysSpawnItems.get() || !playerIn.inventory.addItemStackToInventory(copy)) {
                 ItemEntity entityItem = new ItemEntity(playerIn.world, playerIn.getPosX(), playerIn.getPosYHeight(0.5), playerIn.getPosZ(), copy);
                 entityItem.setNoPickupDelay();
                 entityItem.setOwnerId(playerIn.getUniqueID());
