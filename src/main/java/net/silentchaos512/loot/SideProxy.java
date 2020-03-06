@@ -15,6 +15,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.silentchaos512.lib.event.InitialSpawnItems;
 import net.silentchaos512.lib.util.LootUtils;
 import net.silentchaos512.loot.command.TreasureBagsCommand;
+import net.silentchaos512.loot.config.Config;
 import net.silentchaos512.loot.crafting.ingredient.TreasureBagIngredient;
 import net.silentchaos512.loot.crafting.recipe.ShapedTreasureBagRecipe;
 import net.silentchaos512.loot.crafting.recipe.ShapelessTreasureBagRecipe;
@@ -33,7 +34,8 @@ class SideProxy {
     SideProxy() {
         TreasureBags.LOGGER.debug("SideProxy init");
 
-        // TODO: Config
+        Config.init();
+
         Network.init();
 
         ModLoot.init();
