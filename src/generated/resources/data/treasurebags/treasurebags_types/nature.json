@@ -1,0 +1,16 @@
+{
+  "displayName": {
+    "translate": "bag.treasurebags.nature"
+  },
+  "lootTable": "treasurebags:bags/nature",
+  "rarity": "common",
+  "bagColor": "#228B22",
+  "bagOverlayColor": "#A0522D",
+  "bagStringColor": "#808000",
+  "dropsFromGroups": [
+    "peaceful",
+    "hostile",
+    "boss",
+    "player"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "displayName": {
+    "translate": "bag.treasurebags.ender"
+  },
+  "lootTable": "treasurebags:bags/ender",
+  "rarity": "epic",
+  "bagColor": "#000000",
+  "bagOverlayColor": "#800080",
+  "bagStringColor": "#9932CC",
+  "dropsFromGroups": [
+    "peaceful",
+    "hostile",
+    "boss",
+    "player"
+  ]
+}

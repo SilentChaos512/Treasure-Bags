@@ -1,0 +1,16 @@
+{
+  "displayName": {
+    "translate": "bag.treasurebags.food"
+  },
+  "lootTable": "treasurebags:bags/food",
+  "rarity": "common",
+  "bagColor": "#FFFFFF",
+  "bagOverlayColor": "#FF0000",
+  "bagStringColor": "#CD853F",
+  "dropsFromGroups": [
+    "peaceful",
+    "hostile",
+    "boss",
+    "player"
+  ]
+}
