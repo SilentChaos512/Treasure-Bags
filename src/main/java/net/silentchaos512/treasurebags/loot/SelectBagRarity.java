@@ -38,12 +38,12 @@ public class SelectBagRarity extends LootFunction {
     @Override
     protected ItemStack doApply(ItemStack stack, LootContext context) {
         Entity entity = context.get(LootParameters.THIS_ENTITY);
-        if (entity == null) return stack;
+        if (entity == null) return ItemStack.EMPTY;
 
         List<IBagType> list = BagTypeManager.getValues().stream()
                 .filter(type -> type.canDropFromMob(entity) && type.getRarity() == this.rarity)
                 .collect(Collectors.toList());
-        if (list.isEmpty()) return stack;
+        if (list.isEmpty()) return ItemStack.EMPTY;
 
         IBagType bagType = list.get(TreasureBags.RANDOM.nextInt(list.size()));
         return TreasureBagItem.setBagType(stack, bagType.getId());

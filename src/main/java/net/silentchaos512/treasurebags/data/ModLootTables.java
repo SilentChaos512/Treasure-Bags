@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.LootTableProvider;
+import net.minecraft.data.loot.EntityLootTables;
 import net.minecraft.data.loot.GiftLootTables;
 import net.minecraft.item.Items;
 import net.minecraft.item.Rarity;
 import net.minecraft.loot.*;
 import net.minecraft.loot.conditions.ILootCondition;
+import net.minecraft.loot.conditions.KilledByPlayer;
 import net.minecraft.loot.conditions.RandomChance;
 import net.minecraft.loot.functions.SetCount;
 import net.minecraft.loot.functions.SetName;
@@ -38,13 +40,9 @@ public class ModLootTables extends LootTableProvider {
     }
 
     @Override
-    public String getName() {
-        return "Treasure Bags - Loot Tables";
-    }
-
-    @Override
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
         return ImmutableList.of(
+                Pair.of(Entities::new, LootParameterSets.ENTITY),
                 Pair.of(Gifts::new, LootParameterSets.GIFT)
         );
     }
@@ -52,6 +50,33 @@ public class ModLootTables extends LootTableProvider {
     @Override
     protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
         //map.forEach((p_218436_2_, p_218436_3_) -> LootTableManager.validateLootTable(validationtracker, p_218436_2_, p_218436_3_));
+    }
+
+    private static StandaloneLootEntry.Builder<?> treasureBag(ResourceLocation bagType) {
+        return ItemLootEntry.builder(ModItems.TREASURE_BAG)
+                .acceptFunction(SetBagTypeFunction.builder(bagType));
+    }
+
+    private static StandaloneLootEntry.Builder<?> bagOfRarity(Rarity rarity) {
+        return ItemLootEntry.builder(ModItems.TREASURE_BAG)
+                .acceptFunction(SelectBagRarity.builder(rarity));
+    }
+
+    @Nonnull
+    private static SetName setName(ITextComponent text) {
+        Constructor<SetName> constructor = ObfuscationReflectionHelper.findConstructor(SetName.class, ILootCondition[].class, ITextComponent.class, LootContext.EntityTarget.class);
+        constructor.setAccessible(true);
+        try {
+            return constructor.newInstance(new ILootCondition[0], text, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public String getName() {
+        return "Treasure Bags - Loot Tables";
     }
 
     private static class Gifts extends GiftLootTables {
@@ -317,9 +342,15 @@ public class ModLootTables extends LootTableProvider {
                             .addEntry(treasureBag(Const.Bags.SPAWN))
                     )
             );
+        }
+    }
 
+    private static class Entities extends EntityLootTables {
+        @Override
+        public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             consumer.accept(EntityGroup.BOSS.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
+                            .rolls(ConstantRange.of(2))
                             .addEntry(bagOfRarity(Rarity.COMMON)
                                     .weight(3)
                             )
@@ -374,31 +405,10 @@ public class ModLootTables extends LootTableProvider {
             );
             consumer.accept(EntityGroup.PLAYER.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
+                            .acceptCondition(KilledByPlayer.builder())
                             .addEntry(treasureBag(Const.Bags.PLAYER))
                     )
             );
-        }
-
-        private static StandaloneLootEntry.Builder<?> treasureBag(ResourceLocation bagType) {
-            return ItemLootEntry.builder(ModItems.TREASURE_BAG)
-                    .acceptFunction(SetBagTypeFunction.builder(bagType));
-        }
-
-        private static StandaloneLootEntry.Builder<?> bagOfRarity(Rarity rarity) {
-            return ItemLootEntry.builder(ModItems.TREASURE_BAG)
-                    .acceptFunction(SelectBagRarity.builder(rarity));
-        }
-
-        @Nonnull
-        private static SetName setName(ITextComponent text) {
-            Constructor<SetName> constructor = ObfuscationReflectionHelper.findConstructor(SetName.class, ILootCondition[].class, ITextComponent.class, LootContext.EntityTarget.class);
-            constructor.setAccessible(true);
-            try {
-                return constructor.newInstance(new ILootCondition[0], text, null);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new IllegalStateException(e);
-            }
         }
     }
 }
