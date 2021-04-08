@@ -1,6 +1,7 @@
 package net.silentchaos512.treasurebags.lib;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -12,6 +13,8 @@ import net.silentchaos512.treasurebags.setup.ModItems;
 
 public interface IBagType {
     ResourceLocation getId();
+
+    String getGroup();
 
     Rarity getRarity();
 
@@ -37,7 +40,7 @@ public interface IBagType {
         String typeStr = JSONUtils.getString(json, "bag_type");
         ResourceLocation typeName = ResourceLocation.tryCreate(typeStr);
         if (typeName == null) {
-            throw new JsonSyntaxException("Invalid or empty bag type: '" + typeStr + "'");
+            throw new JsonParseException("Invalid or empty bag type: '" + typeStr + "'");
         }
         return typeName;
     }

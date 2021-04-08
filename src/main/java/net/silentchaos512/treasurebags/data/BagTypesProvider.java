@@ -6,6 +6,7 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DirectoryCache;
 import net.minecraft.data.IDataProvider;
 import net.minecraft.item.Rarity;
+import net.minecraft.util.text.StringTextComponent;
 import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.EntityGroup;
 import net.silentchaos512.utils.Color;
@@ -37,49 +38,61 @@ public class BagTypesProvider implements IDataProvider {
     protected List<BagTypeBuilder> getBagTypes() {
         List<BagTypeBuilder> ret = new ArrayList<>();
 
-        ret.add(new BagTypeBuilder(Const.Bags.SPAWN, Rarity.COMMON, Const.LootTables.BAGS_SPAWN)
+        ret.add(new BagTypeBuilder(Const.Bags.SPAWN, "default", Rarity.COMMON, Const.LootTables.BAGS_SPAWN)
                 .noMobDrops()
                 .colors(Color.LIMEGREEN, Color.SKYBLUE, Color.GOLD)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.DUNGEON, Rarity.RARE, Const.LootTables.BAGS_DUNGEON)
+        ret.add(new BagTypeBuilder(Const.Bags.DUNGEON, "default", Rarity.RARE, Const.LootTables.BAGS_DUNGEON)
                 .dropsFromAllMobs()
                 .colors(Color.DARKOLIVEGREEN, Color.LIGHTGRAY, Color.GRAY)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.ENDER, Rarity.EPIC, Const.LootTables.BAGS_ENDER)
+        ret.add(new BagTypeBuilder(Const.Bags.ENDER, "default", Rarity.EPIC, Const.LootTables.BAGS_ENDER)
                 .dropsFromAllMobs()
                 .colors(Color.BLACK, Color.PURPLE, Color.DARKORCHID)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.FOOD, Rarity.COMMON, Const.LootTables.BAGS_FOOD)
+        ret.add(new BagTypeBuilder(Const.Bags.FOOD, "default", Rarity.COMMON, Const.LootTables.BAGS_FOOD)
                 .dropsFromAllMobs()
                 .colors(Color.WHITE, Color.RED, Color.PERU)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.INGOTS, Rarity.UNCOMMON, Const.LootTables.BAGS_INGOTS)
+        ret.add(new BagTypeBuilder(Const.Bags.INGOTS, "default", Rarity.UNCOMMON, Const.LootTables.BAGS_INGOTS)
                 .dropsFrom(EntityGroup.BOSS, EntityGroup.HOSTILE)
                 .colors(Color.ANTIQUEWHITE.getColor(), Color.OLIVE.getColor(), 0x404040)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.LITERACY, Rarity.COMMON, Const.LootTables.BAGS_LITERACY)
+        ret.add(new BagTypeBuilder(Const.Bags.LITERACY, "default", Rarity.COMMON, Const.LootTables.BAGS_LITERACY)
                 .dropsFromAllMobs()
                 .colors(Color.PERU, Color.MINTCREAM, Color.MEDIUMTURQUOISE)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.NATURE, Rarity.COMMON, Const.LootTables.BAGS_NATURE)
+        ret.add(new BagTypeBuilder(Const.Bags.NATURE, "default", Rarity.COMMON, Const.LootTables.BAGS_NATURE)
                 .dropsFromAllMobs()
                 .colors(Color.FORESTGREEN, Color.SIENNA, Color.OLIVE)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.PLAYER, Rarity.EPIC, Const.LootTables.BAGS_PLAYER)
+        ret.add(new BagTypeBuilder(Const.Bags.PLAYER, "default", Rarity.EPIC, Const.LootTables.BAGS_PLAYER)
                 .dropsFrom(EntityGroup.PLAYER)
                 .colors(Color.FUCHSIA, Color.CORNFLOWERBLUE, Color.GOLD)
         );
 
-        ret.add(new BagTypeBuilder(Const.Bags.STICKS_AND_STONES, Rarity.COMMON, Const.LootTables.BAGS_STICKS_AND_STONES)
+        ret.add(new BagTypeBuilder(Const.Bags.STICKS_AND_STONES, "default", Rarity.COMMON, Const.LootTables.BAGS_STICKS_AND_STONES)
                 .dropsFromAllMobs()
                 .colors(Color.SLATEGRAY, Color.CHOCOLATE, Color.LIGHTGRAY)
+        );
+
+        ret.add(new BagTypeBuilder(Const.Bags.DEFAULT, "example", Rarity.COMMON, Const.LootTables.BAGS_DEFAULT)
+                .noMobDrops()
+                .colors(Color.WHITE, Color.WHITE, Color.WHITE)
+                .displayName(new StringTextComponent("Treasure Bag"))
+        );
+
+        ret.add(new BagTypeBuilder(Const.Bags.TEST, "example", Rarity.COMMON, Const.LootTables.BAGS_TEST)
+                .noMobDrops()
+                .colors(0xFF00FF, 0X00FF00, 0XB8860B)
+                .displayName(new StringTextComponent("Test Bag"))
         );
 
         return ret;

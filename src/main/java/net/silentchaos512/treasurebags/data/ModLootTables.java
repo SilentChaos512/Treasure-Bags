@@ -74,6 +74,14 @@ public class ModLootTables extends LootTableProvider {
         }
     }
 
+    private static LootFunction.Builder<?> setCount(int count) {
+        return SetCount.builder(ConstantRange.of(count));
+    }
+
+    private static LootFunction.Builder<?> setCount(int min, int max) {
+        return SetCount.builder(RandomValueRange.of(min, max));
+    }
+
     @Override
     public String getName() {
         return "Treasure Bags - Loot Tables";
@@ -82,6 +90,12 @@ public class ModLootTables extends LootTableProvider {
     private static class Gifts extends GiftLootTables {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+            consumer.accept(Const.LootTables.STARTING_INVENTORY, LootTable.builder()
+                    .addLootPool(LootPool.builder()
+                            .addEntry(treasureBag(Const.Bags.SPAWN))
+                    )
+            );
+
             consumer.accept(Const.LootTables.BAGS_SPAWN, LootTable.builder()
                     .addLootPool(LootPool.builder()
                             .addEntry(ItemLootEntry.builder(Items.OAK_LOG)
@@ -121,27 +135,27 @@ public class ModLootTables extends LootTableProvider {
                             .rolls(RandomValueRange.of(2, 3))
                             .addEntry(ItemLootEntry.builder(Items.COOKED_COD)
                                     .weight(10)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(2, 4)))
+                                    .acceptFunction(setCount(2, 4))
                             )
                             .addEntry(ItemLootEntry.builder(Items.COOKED_SALMON)
                                     .weight(10)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(2, 4)))
+                                    .acceptFunction(setCount(2, 4))
                             )
                             .addEntry(ItemLootEntry.builder(Items.COOKED_PORKCHOP)
                                     .weight(7)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(1, 3)))
+                                    .acceptFunction(setCount(1, 3))
                             )
                             .addEntry(ItemLootEntry.builder(Items.COOKED_BEEF)
                                     .weight(7)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(1, 3)))
+                                    .acceptFunction(setCount(1, 3))
                             )
                             .addEntry(ItemLootEntry.builder(Items.COOKED_CHICKEN)
                                     .weight(8)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(2, 4)))
+                                    .acceptFunction(setCount(2, 4))
                             )
                             .addEntry(ItemLootEntry.builder(Items.BREAD)
                                     .weight(12)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(2, 6)))
+                                    .acceptFunction(setCount(2, 6))
                             )
                     )
             );
@@ -324,22 +338,38 @@ public class ModLootTables extends LootTableProvider {
                             .rolls(ConstantRange.of(1))
                             .addEntry(ItemLootEntry.builder(Items.BONE)
                                     .weight(10)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(2, 4)))
+                                    .acceptFunction(setCount(2, 4))
                             )
                             .addEntry(ItemLootEntry.builder(Items.BONE_MEAL)
                                     .weight(4)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(3, 8)))
+                                    .acceptFunction(setCount(3, 8))
                             )
                             .addEntry(ItemLootEntry.builder(Items.BONE_BLOCK)
                                     .weight(1)
-                                    .acceptFunction(SetCount.builder(new RandomValueRange(1, 2)))
+                                    .acceptFunction(setCount(1, 2))
                             )
                     )
             );
 
-            consumer.accept(Const.LootTables.STARTING_INVENTORY, LootTable.builder()
+            consumer.accept(Const.LootTables.BAGS_DEFAULT, LootTable.builder()
                     .addLootPool(LootPool.builder()
-                            .addEntry(treasureBag(Const.Bags.SPAWN))
+                            .rolls(ConstantRange.of(1))
+                            .addEntry(ItemLootEntry.builder(Items.STICK)
+                                    .acceptFunction(setCount(4))
+                            )
+                    )
+            );
+
+            consumer.accept(Const.LootTables.BAGS_TEST, LootTable.builder()
+                    .addLootPool(LootPool.builder()
+                            .rolls(ConstantRange.of(1))
+                            .addEntry(ItemLootEntry.builder(Items.IRON_INGOT)
+                                    .acceptFunction(setCount(5))
+                            )
+                            .addEntry(ItemLootEntry.builder(Items.GOLD_INGOT)
+                                    .acceptFunction(setCount(2))
+                            )
+                            .addEntry(ItemLootEntry.builder(Items.DIAMOND))
                     )
             );
         }

@@ -17,6 +17,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.silentchaos512.treasurebags.TreasureBags;
+import net.silentchaos512.treasurebags.config.Config;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.network.SyncBagTypesPacket;
 import org.apache.commons.io.IOUtils;
@@ -39,7 +40,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
     private static final String RESOURCES_PATH = "treasurebags_types";
 
     private static final Map<ResourceLocation, IBagType> MAP = new LinkedHashMap<>();
-    private static int fileCount;
+    private static final Collection<String> ERROR_LIST = new ArrayList<>();
 
     private BagTypeManager() {}
 
@@ -66,13 +67,13 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         if (resources.isEmpty()) return;
 
         MAP.clear();
-        fileCount = 0;
+        ERROR_LIST.clear();
 
         for (ResourceLocation id : resources) {
-            ++fileCount;
+            String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
+            ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
+
             try (IResource iresource = resourceManager.getResource(id)) {
-                String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
-                ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
                 if (TreasureBags.LOGGER.isTraceEnabled()) {
                     TreasureBags.LOGGER.trace(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
                 }
@@ -81,12 +82,23 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
                 if (json == null) {
                     TreasureBags.LOGGER.error(MARKER, "Could not load bag type {} as it's null or empty", name);
                 } else {
-                    addBagType(deserialize(name, json));
+                    // Deserialize bag type JSON, register it if its group is not disabled
+                    IBagType type = deserialize(name, json);
+
+                    if (!Config.Common.disabledBagGroups.get().contains(type.getGroup())) {
+                        addBagType(type);
+                    } else {
+                        TreasureBags.LOGGER.debug("Skipping bag type \"{}\" as its group (\"{}\") is disabled in the config",
+                                type.getId(),
+                                type.getGroup());
+                    }
                 }
             } catch (IllegalArgumentException | JsonParseException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Parsing error loading bag type {}", id, ex);
+                TreasureBags.LOGGER.error(MARKER, "Parsing error loading bag type {}", name, ex);
+                ERROR_LIST.add(name.toString());
             } catch (IOException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Could not read bag type {}", id, ex);
+                TreasureBags.LOGGER.error(MARKER, "Could not read bag type {}", name, ex);
+                ERROR_LIST.add(name.toString());
             }
         }
     }
@@ -110,11 +122,10 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         Collection<ITextComponent> messages = new ArrayList<>();
 
         // Bag type files that failed to load
-        if (fileCount != MAP.size()) {
-            int errorCount = fileCount - MAP.size();
-            String counter = errorCount + " bag type file" + (errorCount > 1 ? "s" : "");
-            ITextComponent prefix = new StringTextComponent("[Treasure Bags] ").mergeStyle(TextFormatting.YELLOW);
-            messages.add(prefix.copyRaw().append(new StringTextComponent(counter + " failed to load! Check your log")));
+        if (!ERROR_LIST.isEmpty()) {
+            String listStr = String.join(", ", ERROR_LIST);
+            messages.add(errorMessage("The following bag types failed to load, check your log file:"));
+            messages.add(new StringTextComponent(listStr));
         }
 
         // Loot tables that failed to load or are missing

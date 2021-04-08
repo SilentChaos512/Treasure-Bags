@@ -14,6 +14,7 @@ import java.util.EnumSet;
 
 public final class BagType implements IBagType {
     private final ResourceLocation name;
+    private String group = "none";
     private Rarity rarity;
     private final Collection<EntityGroup> dropsFromGroups = EnumSet.noneOf(EntityGroup.class);
     private int bagColor;
@@ -30,6 +31,11 @@ public final class BagType implements IBagType {
     @Override
     public ResourceLocation getId() {
         return name;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
     }
 
     @Override
@@ -90,6 +96,7 @@ public final class BagType implements IBagType {
             result.bagOverlayColor = Color.from(json, "bagOverlayColor", 0xFFFFFF).getColor();
             result.bagStringColor = Color.from(json, "bagStringColor", 0xFFFFFF).getColor();
             result.visible = JSONUtils.getBoolean(json, "visible", true);
+            result.group = JSONUtils.getString(json, "group");
 
             JsonElement dropsFromJson = json.get("dropsFromGroups");
             if (dropsFromJson != null && dropsFromJson.isJsonArray()) {

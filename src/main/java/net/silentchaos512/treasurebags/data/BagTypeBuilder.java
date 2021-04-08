@@ -13,6 +13,7 @@ import java.util.*;
 
 public class BagTypeBuilder {
     final ResourceLocation bagTypeId;
+    private final String group;
     private final Rarity rarity;
     private final ResourceLocation lootTable;
     private final Collection<EntityGroup> dropsFromGroups = new LinkedHashSet<>();
@@ -22,8 +23,14 @@ public class BagTypeBuilder {
     private int bagOverlayColor;
     private int bagStringColor;
 
+    @Deprecated
     public BagTypeBuilder(ResourceLocation bagTypeId, Rarity rarity, ResourceLocation lootTable) {
+        this(bagTypeId, "default", rarity, lootTable);
+    }
+
+    public BagTypeBuilder(ResourceLocation bagTypeId, String group, Rarity rarity, ResourceLocation lootTable) {
         this.bagTypeId = bagTypeId;
+        this.group = group;
         this.rarity = rarity;
         this.lootTable = lootTable;
         this.displayName = new TranslationTextComponent(String.format("bag.%s.%s", this.bagTypeId.getNamespace(), this.bagTypeId.getPath()));
@@ -72,6 +79,7 @@ public class BagTypeBuilder {
 
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
+        json.addProperty("group", this.group);
         json.add("displayName", ITextComponent.Serializer.toJsonTree(this.displayName));
         json.addProperty("lootTable", this.lootTable.toString());
         json.addProperty("rarity", this.rarity.name().toLowerCase(Locale.ROOT));
