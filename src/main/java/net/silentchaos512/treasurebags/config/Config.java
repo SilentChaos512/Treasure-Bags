@@ -1,36 +1,62 @@
 package net.silentchaos512.treasurebags.config;
 
-import net.minecraftforge.fml.loading.FMLPaths;
-import net.silentchaos512.utils.config.BooleanValue;
-import net.silentchaos512.utils.config.ConfigSpecWrapper;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.silentchaos512.treasurebags.TreasureBags;
 
-public class Config {
-    private static final ConfigSpecWrapper WRAPPER = ConfigSpecWrapper.create(
-            FMLPaths.CONFIGDIR.get().resolve("treasurebags-common.toml"));
+@Mod.EventBusSubscriber(modid = TreasureBags.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public final class Config {
+    public static final class Common {
+        static final ForgeConfigSpec spec;
 
-    public static final General GENERAL = new General(WRAPPER);
+        public static final ForgeConfigSpec.BooleanValue alwaysSpawnItems;
 
-    public static class General {
+        static {
+            ForgeConfigSpec.Builder builder =new ForgeConfigSpec.Builder();
 
-        public BooleanValue alwaysSpawnItems;
+            {
+                builder.push("item");
 
+                {
+                    builder.push("treasurebag");
 
-        General(ConfigSpecWrapper wrapper) {
-            alwaysSpawnItems = wrapper
-                    .builder("item.treasurebag.alwaysSpawnItems")
-                    .comment("If true, treasure bags will always spawn items on top of the player.",
-                            "Otherwise this only happens if the player's inventory is full",
-                            "Useful for bag-type items; Dank Storage, SGems Gem Bag, backpacks")
-                    .define(false);
+                    alwaysSpawnItems = builder
+                            .comment("If true, treasure bags will always spawn items on top of the player.",
+                                    "Otherwise this only happens if the player's inventory is full",
+                                    "Useful for bag-type items; Dank Storage, SGems Gem Bag, backpacks")
+                            .define("alwaysSpawnItems", false);
+                    
+                    builder.pop();
+                }
+
+                builder.pop();
+            }
+
+            spec = builder.build();
         }
 
+        private Common() {}
     }
 
-    private Config() {
-    }
+    private Config() {}
 
     public static void init() {
-        WRAPPER.validate();
-        WRAPPER.validate();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Common.spec);
+    }
+
+    public static void sync() {
+    }
+
+    @SubscribeEvent
+    public static void sync(ModConfig.Loading event) {
+        sync();
+    }
+
+    @SubscribeEvent
+    public static void sync(ModConfig.Reloading event) {
+        sync();
     }
 }

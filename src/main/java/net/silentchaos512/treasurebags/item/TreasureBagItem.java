@@ -209,7 +209,7 @@ public class TreasureBagItem extends LootContainerItem {
     }
 
     private void giveOrDropItem(PlayerEntity playerIn, ItemStack copy) {
-        if (Config.GENERAL.alwaysSpawnItems.get() || !playerIn.inventory.addItemStackToInventory(copy)) {
+        if (Config.Common.alwaysSpawnItems.get() || !playerIn.inventory.addItemStackToInventory(copy)) {
             ItemEntity entityItem = new ItemEntity(playerIn.world, playerIn.getPosX(), playerIn.getPosYHeight(0.5), playerIn.getPosZ(), copy);
             entityItem.setNoPickupDelay();
             entityItem.setOwnerId(playerIn.getUniqueID());
