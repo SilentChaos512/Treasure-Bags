@@ -21,7 +21,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.silentchaos512.treasurebags.lib.Const;
-import net.silentchaos512.treasurebags.lib.EntityGroup;
+import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.treasurebags.loot.SelectBagRarity;
 import net.silentchaos512.treasurebags.loot.SetBagTypeFunction;
 import net.silentchaos512.treasurebags.setup.ModItems;
@@ -378,7 +378,7 @@ public class ModLootTables extends LootTableProvider {
     private static class Entities extends EntityLootTables {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
-            consumer.accept(EntityGroup.BOSS.getLootTable(), LootTable.builder()
+            consumer.accept(StandardEntityGroups.BOSS.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
                             .rolls(ConstantRange.of(2))
                             .addEntry(bagOfRarity(Rarity.COMMON)
@@ -395,7 +395,7 @@ public class ModLootTables extends LootTableProvider {
                             )
                     )
             );
-            consumer.accept(EntityGroup.HOSTILE.getLootTable(), LootTable.builder()
+            consumer.accept(StandardEntityGroups.HOSTILE.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
                             .addEntry(EmptyLootEntry.func_216167_a()
                                     .weight(200)
@@ -414,7 +414,7 @@ public class ModLootTables extends LootTableProvider {
                             )
                     )
             );
-            consumer.accept(EntityGroup.PEACEFUL.getLootTable(), LootTable.builder()
+            consumer.accept(StandardEntityGroups.PEACEFUL.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
                             .addEntry(EmptyLootEntry.func_216167_a()
                                     .weight(500)
@@ -433,7 +433,7 @@ public class ModLootTables extends LootTableProvider {
                             )
                     )
             );
-            consumer.accept(EntityGroup.PLAYER.getLootTable(), LootTable.builder()
+            consumer.accept(StandardEntityGroups.PLAYER.getLootTable(), LootTable.builder()
                     .addLootPool(LootPool.builder()
                             .acceptCondition(KilledByPlayer.builder())
                             .addEntry(treasureBag(Const.Bags.PLAYER))

@@ -23,6 +23,8 @@ public final class Registration {
 
         ModItems.register();
         ModRecipes.register();
+
+        EntityGroups.init();
     }
 
     private static <T extends IForgeRegistryEntry<T>> DeferredRegister<T> create(IForgeRegistry<T> registry) {

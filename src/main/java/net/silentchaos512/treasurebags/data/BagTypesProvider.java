@@ -8,7 +8,7 @@ import net.minecraft.data.IDataProvider;
 import net.minecraft.item.Rarity;
 import net.minecraft.util.text.StringTextComponent;
 import net.silentchaos512.treasurebags.lib.Const;
-import net.silentchaos512.treasurebags.lib.EntityGroup;
+import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +59,7 @@ public class BagTypesProvider implements IDataProvider {
         );
 
         ret.add(new BagTypeBuilder(Const.Bags.INGOTS, "default", Rarity.UNCOMMON, Const.LootTables.BAGS_INGOTS)
-                .dropsFrom(EntityGroup.BOSS, EntityGroup.HOSTILE)
+                .dropsFrom(StandardEntityGroups.BOSS, StandardEntityGroups.HOSTILE)
                 .colors(Color.ANTIQUEWHITE.getColor(), Color.OLIVE.getColor(), 0x404040)
         );
 
@@ -74,7 +74,7 @@ public class BagTypesProvider implements IDataProvider {
         );
 
         ret.add(new BagTypeBuilder(Const.Bags.PLAYER, "default", Rarity.EPIC, Const.LootTables.BAGS_PLAYER)
-                .dropsFrom(EntityGroup.PLAYER)
+                .dropsFrom(StandardEntityGroups.PLAYER)
                 .colors(Color.FUCHSIA, Color.CORNFLOWERBLUE, Color.GOLD)
         );
 

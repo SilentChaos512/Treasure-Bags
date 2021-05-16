@@ -10,13 +10,14 @@ import java.util.Objects;
 
 public final class Network {
     private static final ResourceLocation NAME = TreasureBags.getId("network");
+    private static final String VERSION = "2"; // TODO: Add version check like Silent Gear's
 
     public static SimpleChannel channel;
     static {
         channel = NetworkRegistry.ChannelBuilder.named(NAME)
-                .clientAcceptedVersions(s -> Objects.equals(s, "1"))
-                .serverAcceptedVersions(s -> Objects.equals(s, "1"))
-                .networkProtocolVersion(() -> "1")
+                .clientAcceptedVersions(s -> Objects.equals(s, VERSION))
+                .serverAcceptedVersions(s -> Objects.equals(s, VERSION))
+                .networkProtocolVersion(() -> VERSION)
                 .simpleChannel();
 
         channel.messageBuilder(SyncBagTypesPacket.class, 1)

@@ -6,7 +6,9 @@ import net.minecraft.item.Rarity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.silentchaos512.treasurebags.lib.EntityGroup;
+import net.silentchaos512.treasurebags.TreasureBags;
+import net.silentchaos512.treasurebags.api.IEntityGroup;
+import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
 
 import java.util.*;
@@ -16,7 +18,7 @@ public class BagTypeBuilder {
     private final String group;
     private final Rarity rarity;
     private final ResourceLocation lootTable;
-    private final Collection<EntityGroup> dropsFromGroups = new LinkedHashSet<>();
+    private final Collection<IEntityGroup> dropsFromGroups = new LinkedHashSet<>();
     private boolean noMobDrops = false;
     private ITextComponent displayName;
     private int bagColor;
@@ -53,10 +55,10 @@ public class BagTypeBuilder {
      * @return The builder
      */
     public BagTypeBuilder dropsFromAllMobs() {
-        return dropsFrom(EntityGroup.values());
+        return dropsFrom(StandardEntityGroups.values());
     }
 
-    public BagTypeBuilder dropsFrom(EntityGroup... groups) {
+    public BagTypeBuilder dropsFrom(IEntityGroup... groups) {
         this.dropsFromGroups.addAll(Arrays.asList(groups));
         return this;
     }
@@ -89,7 +91,7 @@ public class BagTypeBuilder {
 
         JsonArray dropsFromArray = new JsonArray();
         if (!dropsFromGroups.isEmpty()) {
-            dropsFromGroups.forEach(group -> dropsFromArray.add(group.getName()));
+            dropsFromGroups.forEach(group -> dropsFromArray.add(TreasureBags.shortenId(group.getId())));
         } else if (!noMobDrops) {
             BagTypesProvider.LOGGER.warn("Bag type '{}' has no dropsFromGroups. This may be unintentional.", this.bagTypeId);
         }

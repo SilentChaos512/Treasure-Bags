@@ -4,19 +4,23 @@ import com.google.gson.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Rarity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.silentchaos512.treasurebags.TreasureBags;
+import net.silentchaos512.treasurebags.api.IEntityGroup;
+import net.silentchaos512.treasurebags.setup.EntityGroups;
 import net.silentchaos512.utils.Color;
 
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.HashSet;
 
 public final class BagType implements IBagType {
     private final ResourceLocation name;
     private String group = "none";
     private Rarity rarity;
-    private final Collection<EntityGroup> dropsFromGroups = EnumSet.noneOf(EntityGroup.class);
+    private final Collection<IEntityGroup> dropsFromGroups = new HashSet<>();
     private int bagColor;
     private int bagOverlayColor;
     private int bagStringColor;
@@ -45,7 +49,12 @@ public final class BagType implements IBagType {
 
     @Override
     public boolean canDropFromMob(Entity entity) {
-        return dropsFromGroups.contains(EntityGroup.from(entity));
+        for (IEntityGroup group : this.dropsFromGroups) {
+            if (group.matches(entity)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -102,11 +111,12 @@ public final class BagType implements IBagType {
             if (dropsFromJson != null && dropsFromJson.isJsonArray()) {
                 JsonArray array = dropsFromJson.getAsJsonArray();
                 for (JsonElement e : array) {
-                    EntityGroup group = EntityGroup.byName(e.getAsString());
-                    if (group != null) {
+                    ResourceLocation id = TreasureBags.getIdWithDefaultNamespace(e.getAsString());
+                    if (id != null) {
+                        IEntityGroup group = EntityGroups.getOrCreate(id, Serializer::getOrCreateEntityGroup);
                         result.dropsFromGroups.add(group);
                     } else {
-                        throw new JsonParseException("Unknown entity group: " + e.getAsString());
+                        throw new JsonParseException("Invalid entity group name: " + e.getAsString());
                     }
                 }
             }
@@ -126,7 +136,7 @@ public final class BagType implements IBagType {
 
             int groupsCount = buffer.readByte();
             for (int i = 0; i < groupsCount; ++i) {
-                bagType.dropsFromGroups.add(buffer.readEnumValue(EntityGroup.class));
+                bagType.dropsFromGroups.add(EntityGroups.getOrCreate(buffer.readResourceLocation(), Serializer::getOrCreateEntityGroup));
             }
 
             return bagType;
@@ -143,9 +153,9 @@ public final class BagType implements IBagType {
             buffer.writeBoolean(bagType.isVisible());
 
             if (bagType instanceof BagType) {
-                Collection<EntityGroup> groups = ((BagType) bagType).dropsFromGroups;
+                Collection<IEntityGroup> groups = ((BagType) bagType).dropsFromGroups;
                 buffer.writeByte(groups.size());
-                groups.forEach(buffer::writeEnumValue);
+                groups.forEach(group -> buffer.writeResourceLocation(group.getId()));
             }
         }
 
@@ -156,6 +166,10 @@ public final class BagType implements IBagType {
                 }
             }
             throw new JsonSyntaxException("Unknown rarity: " + name);
+        }
+
+        private static IEntityGroup getOrCreateEntityGroup(ResourceLocation id) {
+            return new TagEntityGroup(id, EntityTypeTags.getTagById(id.toString()));
         }
     }
 }

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
@@ -42,5 +43,23 @@ public final class TreasureBags {
 
     public static ResourceLocation getId(String path) {
         return new ResourceLocation(MOD_ID, path);
+    }
+
+    @Nullable
+    public static ResourceLocation getIdWithDefaultNamespace(String name) {
+        if (name.contains(":")) {
+            return ResourceLocation.tryCreate(name);
+        }
+        return ResourceLocation.tryCreate(MOD_ID + ":" + name);
+    }
+
+    public static String shortenId(@Nullable ResourceLocation id) {
+        if (id == null) {
+            return "null";
+        }
+        if (MOD_ID.equals(id.getNamespace())) {
+            return id.getPath();
+        }
+        return id.toString();
     }
 }

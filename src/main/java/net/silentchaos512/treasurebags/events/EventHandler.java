@@ -19,7 +19,8 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.silentchaos512.treasurebags.TreasureBags;
-import net.silentchaos512.treasurebags.lib.EntityGroup;
+import net.silentchaos512.treasurebags.api.IEntityGroup;
+import net.silentchaos512.treasurebags.setup.EntityGroups;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -45,12 +46,10 @@ public final class EventHandler {
         PlayerEntity player = getPlayerThatCausedDeath(event.getSource());
 
         // Get the bonus drops loot table for this mob type
-        EntityGroup group = EntityGroup.from(entity);
-        /*if (TreasureBags.LOGGER.isDebugEnabled()) {
-            String playerName = player != null ? player.getScoreboardName() : "null";
-            TreasureBags.LOGGER.debug("{} killed mob of type {}", playerName, group);
-        }*/
+        EntityGroups.getGroups(entity).forEach(group -> doDropsForGroup(event, entity, world, server, player, group));
+    }
 
+    private static void doDropsForGroup(LivingDropsEvent event, LivingEntity entity, World world, MinecraftServer server, PlayerEntity player, IEntityGroup group) {
         LootTable lootTable = server.getLootTableManager().getLootTableFromLocation(group.getLootTable());
         LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.THIS_ENTITY, entity)

@@ -3,6 +3,11 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2021-05-16
+### Added
+- Tag-based entity groups. Typing an entity type tag's ID in the `dropsFromGroups` of a bag type will now make it drop from entities with that tag.
+- (API) Custom entity groups can now be defined by registering an `IEntityGroup` with `TreasureBagsApi`
+
 ## [1.3.2] - 2021-04-08
 ### Added
 - Bag groups and a config option to disable bag types by group [#6]
