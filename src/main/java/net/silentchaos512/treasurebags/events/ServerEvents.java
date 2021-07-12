@@ -28,13 +28,13 @@ public final class ServerEvents {
         ServerPlayerEntity playerMP = (ServerPlayerEntity) player;
 
         sendBagTypesToClient(playerMP);
-        BagTypeManager.getErrorMessages(playerMP).forEach(text -> player.sendMessage(text, Util.DUMMY_UUID));
+        BagTypeManager.getErrorMessages(playerMP).forEach(text -> player.sendMessage(text, Util.NIL_UUID));
     }
 
     private static void sendBagTypesToClient(ServerPlayerEntity playerMP) {
         Collection<IBagType> bagTypes = BagTypeManager.getValues();
         TreasureBags.LOGGER.info("Sending {} bag types to {}", bagTypes.size(), playerMP.getScoreboardName());
         SyncBagTypesPacket msg = new SyncBagTypesPacket(bagTypes);
-        Network.channel.sendTo(msg, playerMP.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        Network.channel.sendTo(msg, playerMP.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 }

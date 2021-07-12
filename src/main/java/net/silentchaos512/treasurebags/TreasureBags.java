@@ -48,9 +48,9 @@ public final class TreasureBags {
     @Nullable
     public static ResourceLocation getIdWithDefaultNamespace(String name) {
         if (name.contains(":")) {
-            return ResourceLocation.tryCreate(name);
+            return ResourceLocation.tryParse(name);
         }
-        return ResourceLocation.tryCreate(MOD_ID + ":" + name);
+        return ResourceLocation.tryParse(MOD_ID + ":" + name);
     }
 
     public static String shortenId(@Nullable ResourceLocation id) {

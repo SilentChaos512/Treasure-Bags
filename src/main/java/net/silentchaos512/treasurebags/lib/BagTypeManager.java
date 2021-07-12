@@ -62,7 +62,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
     @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {
         Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-        Collection<ResourceLocation> resources = resourceManager.getAllResourceLocations(
+        Collection<ResourceLocation> resources = resourceManager.listResources(
                 RESOURCES_PATH, s -> s.endsWith(".json"));
         if (resources.isEmpty()) return;
 
@@ -141,15 +141,15 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
     }
 
     private static int countMissingLootTables(ServerPlayerEntity player) {
-        MinecraftServer server = player.world.getServer();
+        MinecraftServer server = player.level.getServer();
         if (server == null) return 0;
 
-        Collection<ResourceLocation> lootTables = server.getLootTableManager().getLootTableKeys();
+        Collection<ResourceLocation> lootTables = server.getLootTables().getIds();
         return (int) MAP.values().stream().filter(bagType -> !lootTables.contains(bagType.getLootTable())).count();
     }
 
     private static ITextComponent errorMessage(String str) {
-        return new StringTextComponent("[Treasure Bags] ").mergeStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(str).mergeStyle(TextFormatting.WHITE));
+        return new StringTextComponent("[Treasure Bags] ").withStyle(TextFormatting.YELLOW)
+                .append(new StringTextComponent(str).withStyle(TextFormatting.WHITE));
     }
 }

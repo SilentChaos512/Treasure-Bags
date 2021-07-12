@@ -26,18 +26,18 @@ import java.util.stream.Collectors;
 
 public final class TreasureBagsCommand {
     private static final SuggestionProvider<CommandSource> bagTypeSuggestions = (ctx, builder) ->
-            ISuggestionProvider.func_212476_a(BagTypeManager.getValues().stream().map(IBagType::getId), builder);
+            ISuggestionProvider.suggestResource(BagTypeManager.getValues().stream().map(IBagType::getId), builder);
 
     private TreasureBagsCommand() {}
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> builder = Commands.literal("treasurebags")
-                .requires(source -> source.hasPermissionLevel(2));
+                .requires(source -> source.hasPermission(2));
 
         // give
         builder.then(Commands.literal("give")
                 .then(Commands.argument("players", EntityArgument.players())
-                        .then(Commands.argument("bagType", ResourceLocationArgument.resourceLocation())
+                        .then(Commands.argument("bagType", ResourceLocationArgument.id())
                                 .suggests(bagTypeSuggestions)
                                 .executes(context ->
                                         giveBags(context, 1))
@@ -60,17 +60,17 @@ public final class TreasureBagsCommand {
     }
 
     private static int giveBags(CommandContext<CommandSource> context, int bagCount) throws CommandSyntaxException {
-        ResourceLocation bagTypeId = ResourceLocationArgument.getResourceLocation(context, "bagType");
+        ResourceLocation bagTypeId = ResourceLocationArgument.getId(context, "bagType");
         IBagType bagType = BagTypeManager.getValue(bagTypeId);
         if (bagType == null) {
-            context.getSource().sendErrorMessage(translate("give.invalid", bagTypeId.toString()));
+            context.getSource().sendFailure(translate("give.invalid", bagTypeId.toString()));
             return 0;
         }
 
         for (ServerPlayerEntity player : EntityArgument.getPlayers(context, "players")) {
             ItemStack stack = ModItems.TREASURE_BAG.get().stackOfType(bagType, bagCount);
             PlayerUtils.giveItem(player, stack);
-            context.getSource().sendFeedback(translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
+            context.getSource().sendSuccess(translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
         }
 
         return 1;
@@ -80,7 +80,7 @@ public final class TreasureBagsCommand {
         String str = BagTypeManager.getValues().stream()
                 .map(type -> type.getId().toString())
                 .collect(Collectors.joining(", "));
-        context.getSource().sendFeedback(new StringTextComponent(str), true);
+        context.getSource().sendSuccess(new StringTextComponent(str), true);
         return 1;
     }
 

@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public final class ModItems {
     public static final ItemRegistryObject<TreasureBagItem> TREASURE_BAG = register("treasure_bag", () ->
-            new TreasureBagItem(new Item.Properties().group(ItemGroup.MISC)));
+            new TreasureBagItem(new Item.Properties().tab(ItemGroup.TAB_MISC)));
 
     private ModItems() {}
 

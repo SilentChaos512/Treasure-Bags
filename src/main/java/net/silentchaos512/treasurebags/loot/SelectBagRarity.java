@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import net.minecraft.loot.functions.ILootFunction.IBuilder;
+
 public class SelectBagRarity extends LootFunction {
     private final Rarity rarity;
 
@@ -36,8 +38,8 @@ public class SelectBagRarity extends LootFunction {
     }
 
     @Override
-    protected ItemStack doApply(ItemStack stack, LootContext context) {
-        Entity entity = context.get(LootParameters.THIS_ENTITY);
+    protected ItemStack run(ItemStack stack, LootContext context) {
+        Entity entity = context.getParamOrNull(LootParameters.THIS_ENTITY);
         if (entity == null) return ItemStack.EMPTY;
 
         List<IBagType> list = BagTypeManager.getValues().stream()
@@ -50,7 +52,7 @@ public class SelectBagRarity extends LootFunction {
     }
 
     @Override
-    public LootFunctionType getFunctionType() {
+    public LootFunctionType getType() {
         return ModLoot.SELECT_BAG_RARITY;
     }
 
@@ -63,7 +65,7 @@ public class SelectBagRarity extends LootFunction {
 
         @Override
         public SelectBagRarity deserialize(JsonObject json, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
-            Rarity rarity = BagType.Serializer.deserializeRarity(JSONUtils.getString(json, "rarity"));
+            Rarity rarity = BagType.Serializer.deserializeRarity(JSONUtils.getAsString(json, "rarity"));
             return new SelectBagRarity(rarity, conditionsIn);
         }
 

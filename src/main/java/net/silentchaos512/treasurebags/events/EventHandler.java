@@ -35,13 +35,13 @@ public final class EventHandler {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         LivingEntity entity = (LivingEntity) event.getEntity();
-        World world = entity.world;
-        if (world.isRemote) return;
+        World world = entity.level;
+        if (world.isClientSide) return;
         MinecraftServer server = world.getServer();
         if (server == null) return;
 
         // Mob loot disabled?
-        if (!world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) return;
+        if (!world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) return;
 
         PlayerEntity player = getPlayerThatCausedDeath(event.getSource());
 
@@ -50,19 +50,19 @@ public final class EventHandler {
     }
 
     private static void doDropsForGroup(LivingDropsEvent event, LivingEntity entity, World world, MinecraftServer server, PlayerEntity player, IEntityGroup group) {
-        LootTable lootTable = server.getLootTableManager().getLootTableFromLocation(group.getLootTable());
+        LootTable lootTable = server.getLootTables().get(group.getLootTable());
         LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld) world)
                 .withParameter(LootParameters.THIS_ENTITY, entity)
-                .withParameter(LootParameters.field_237457_g_, entity.getPositionVec())
+                .withParameter(LootParameters.ORIGIN, entity.position())
                 .withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
-                .withNullableParameter(LootParameters.KILLER_ENTITY, player)
-                .withNullableParameter(LootParameters.LAST_DAMAGE_PLAYER, player)
-                .withNullableParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getImmediateSource());
+                .withOptionalParameter(LootParameters.KILLER_ENTITY, player)
+                .withOptionalParameter(LootParameters.LAST_DAMAGE_PLAYER, player)
+                .withOptionalParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getDirectEntity());
         if (player != null) {
             contextBuilder.withLuck(player.getLuck());
         }
-        List<ItemStack> list = lootTable.generate(contextBuilder.build(LootParameterSets.ENTITY));
-        list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.getPosX(), entity.getPosY(), entity.getPosZ(), stack)));
+        List<ItemStack> list = lootTable.getRandomItems(contextBuilder.create(LootParameterSets.ENTITY));
+        list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.getX(), entity.getY(), entity.getZ(), stack)));
     }
 
     /**
@@ -78,7 +78,7 @@ public final class EventHandler {
         if (source == null) return null;
 
         // Player is true source?
-        Entity entitySource = source.getTrueSource();
+        Entity entitySource = source.getEntity();
         if (entitySource instanceof PlayerEntity) {
             return (PlayerEntity) entitySource;
         }
@@ -86,7 +86,7 @@ public final class EventHandler {
         // Player's pet is true source?
         if (entitySource instanceof TameableEntity) {
             TameableEntity tamed = (TameableEntity) entitySource;
-            if (tamed.isTamed() && tamed.getOwner() instanceof PlayerEntity) {
+            if (tamed.isTame() && tamed.getOwner() instanceof PlayerEntity) {
                 return (PlayerEntity) tamed.getOwner();
             }
         }

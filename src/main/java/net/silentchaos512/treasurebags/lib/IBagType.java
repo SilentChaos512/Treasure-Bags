@@ -37,8 +37,8 @@ public interface IBagType {
     }
 
     static ResourceLocation nameFromJson(JsonObject json) {
-        String typeStr = JSONUtils.getString(json, "bag_type");
-        ResourceLocation typeName = ResourceLocation.tryCreate(typeStr);
+        String typeStr = JSONUtils.getAsString(json, "bag_type");
+        ResourceLocation typeName = ResourceLocation.tryParse(typeStr);
         if (typeName == null) {
             throw new JsonParseException("Invalid or empty bag type: '" + typeStr + "'");
         }

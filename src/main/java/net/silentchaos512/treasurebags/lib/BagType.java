@@ -93,19 +93,19 @@ public final class BagType implements IBagType {
         public static BagType deserialize(ResourceLocation name, JsonObject json) {
             BagType result = new BagType(name);
 
-            String tableName = JSONUtils.getString(json, "lootTable");
-            ResourceLocation lootTable = ResourceLocation.tryCreate(tableName);
+            String tableName = JSONUtils.getAsString(json, "lootTable");
+            ResourceLocation lootTable = ResourceLocation.tryParse(tableName);
             if (lootTable == null) {
                 throw new JsonParseException("Invalid loot table: " + tableName);
             }
             result.lootTable = lootTable;
-            result.rarity = deserializeRarity(JSONUtils.getString(json, "rarity"));
-            result.customName = ITextComponent.Serializer.getComponentFromJson(json.get("displayName"));
+            result.rarity = deserializeRarity(JSONUtils.getAsString(json, "rarity"));
+            result.customName = ITextComponent.Serializer.fromJson(json.get("displayName"));
             result.bagColor = Color.from(json, "bagColor", 0xFFFFFF).getColor();
             result.bagOverlayColor = Color.from(json, "bagOverlayColor", 0xFFFFFF).getColor();
             result.bagStringColor = Color.from(json, "bagStringColor", 0xFFFFFF).getColor();
-            result.visible = JSONUtils.getBoolean(json, "visible", true);
-            result.group = JSONUtils.getString(json, "group");
+            result.visible = JSONUtils.getAsBoolean(json, "visible", true);
+            result.group = JSONUtils.getAsString(json, "group");
 
             JsonElement dropsFromJson = json.get("dropsFromGroups");
             if (dropsFromJson != null && dropsFromJson.isJsonArray()) {
@@ -127,8 +127,8 @@ public final class BagType implements IBagType {
         public static BagType read(PacketBuffer buffer) {
             BagType bagType = new BagType(buffer.readResourceLocation());
             bagType.lootTable = buffer.readResourceLocation();
-            bagType.rarity = buffer.readEnumValue(Rarity.class);
-            bagType.customName = buffer.readTextComponent();
+            bagType.rarity = buffer.readEnum(Rarity.class);
+            bagType.customName = buffer.readComponent();
             bagType.bagColor = buffer.readVarInt();
             bagType.bagOverlayColor = buffer.readVarInt();
             bagType.bagStringColor = buffer.readVarInt();
@@ -145,8 +145,8 @@ public final class BagType implements IBagType {
         public static void write(IBagType bagType, PacketBuffer buffer) {
             buffer.writeResourceLocation(bagType.getId());
             buffer.writeResourceLocation(bagType.getLootTable());
-            buffer.writeEnumValue(bagType.getRarity());
-            buffer.writeTextComponent(bagType.getCustomName());
+            buffer.writeEnum(bagType.getRarity());
+            buffer.writeComponent(bagType.getCustomName());
             buffer.writeVarInt(bagType.getBagColor());
             buffer.writeVarInt(bagType.getBagOverlayColor());
             buffer.writeVarInt(bagType.getBagStringColor());
@@ -169,7 +169,7 @@ public final class BagType implements IBagType {
         }
 
         private static IEntityGroup getOrCreateEntityGroup(ResourceLocation id) {
-            return new TagEntityGroup(id, EntityTypeTags.getTagById(id.toString()));
+            return new TagEntityGroup(id, EntityTypeTags.bind(id.toString()));
         }
     }
 }

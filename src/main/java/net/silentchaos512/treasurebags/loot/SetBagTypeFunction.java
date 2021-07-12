@@ -14,6 +14,8 @@ import net.minecraft.util.ResourceLocation;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.setup.ModLoot;
 
+import net.minecraft.loot.functions.ILootFunction.IBuilder;
+
 public final class SetBagTypeFunction extends LootFunction {
     private final ResourceLocation typeId;
 
@@ -27,12 +29,12 @@ public final class SetBagTypeFunction extends LootFunction {
     }
 
     @Override
-    public ItemStack doApply(ItemStack stack, LootContext context) {
+    public ItemStack run(ItemStack stack, LootContext context) {
         return TreasureBagItem.setBagType(stack, this.typeId);
     }
 
     @Override
-    public LootFunctionType getFunctionType() {
+    public LootFunctionType getType() {
         return ModLoot.SET_BAG_TYPE;
     }
 
@@ -45,8 +47,8 @@ public final class SetBagTypeFunction extends LootFunction {
 
         @Override
         public SetBagTypeFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
-            String str = JSONUtils.getString(object, "type", "");
-            ResourceLocation id = ResourceLocation.tryCreate(str);
+            String str = JSONUtils.getAsString(object, "type", "");
+            ResourceLocation id = ResourceLocation.tryParse(str);
             if (id == null) throw new JsonParseException("Bag type is invalid or missing: '" + str + "'");
 
             return new SetBagTypeFunction(id, conditionsIn);

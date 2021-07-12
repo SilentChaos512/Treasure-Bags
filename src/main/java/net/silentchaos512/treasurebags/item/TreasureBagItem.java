@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class TreasureBagItem extends LootContainerItem {
     private static final String NBT_BAG_TYPE = "BagType";
 
@@ -103,12 +105,12 @@ public class TreasureBagItem extends LootContainerItem {
 
     @Nonnull
     @Override
-    public ITextComponent getDisplayName(@Nonnull ItemStack stack) {
+    public ITextComponent getName(@Nonnull ItemStack stack) {
         IBagType type = getBagType(stack);
         if (type != null) {
             return type.getCustomName();
         }
-        return super.getDisplayName(stack);
+        return super.getName(stack);
     }
 
     @Override
@@ -132,41 +134,41 @@ public class TreasureBagItem extends LootContainerItem {
     }
 
     @Override
-    public void addInformation(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(@Nonnull ItemStack stack, @Nullable World worldIn, @Nonnull List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         // Bag type
         if (flagIn.isAdvanced()) {
             IBagType type = getBagType(stack);
             if (type != null) {
-                tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".type", type.getId())
-                        .mergeStyle(TextFormatting.YELLOW));
+                tooltip.add(new TranslationTextComponent(this.getDescriptionId() + ".type", type.getId())
+                        .withStyle(TextFormatting.YELLOW));
             } else {
                 String typeStr = getBagTypeString(stack);
-                tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".unknownType")
-                        .mergeStyle(TextFormatting.RED));
-                tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".type", typeStr)
-                        .mergeStyle(TextFormatting.YELLOW));
+                tooltip.add(new TranslationTextComponent(this.getDescriptionId() + ".unknownType")
+                        .withStyle(TextFormatting.RED));
+                tooltip.add(new TranslationTextComponent(this.getDescriptionId() + ".type", typeStr)
+                        .withStyle(TextFormatting.YELLOW));
             }
         }
 
         // Loot table (or whatever ItemLootContainer wants to do)
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         // Display data pack ID
         String typeStr = getBagTypeString(stack);
-        ResourceLocation typeName = ResourceLocation.tryCreate(typeStr);
+        ResourceLocation typeName = ResourceLocation.tryParse(typeStr);
         if (typeName != null) {
             tooltip.add(new StringTextComponent(typeName.getNamespace())
-                    .mergeStyle(TextFormatting.BLUE)
-                    .mergeStyle(TextFormatting.ITALIC));
+                    .withStyle(TextFormatting.BLUE)
+                    .withStyle(TextFormatting.ITALIC));
         } else {
-            tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".invalidType")
-                    .mergeStyle(TextFormatting.RED));
+            tooltip.add(new TranslationTextComponent(this.getDescriptionId() + ".invalidType")
+                    .withStyle(TextFormatting.RED));
         }
     }
 
     @Override
-    public void fillItemGroup(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
-        if (!isInGroup(group)) return;
+    public void fillItemCategory(@Nonnull ItemGroup group, @Nonnull NonNullList<ItemStack> items) {
+        if (!allowdedIn(group)) return;
         items.add(new ItemStack(this));
 
         // Add for each type (sorted by ID)
@@ -181,8 +183,8 @@ public class TreasureBagItem extends LootContainerItem {
 
     @Nonnull
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, @Nonnull Hand handIn) {
-        ItemStack heldItem = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, @Nonnull Hand handIn) {
+        ItemStack heldItem = playerIn.getItemInHand(handIn);
         if (!(playerIn instanceof ServerPlayerEntity)) {
             return new ActionResult<>(ActionResultType.SUCCESS, heldItem);
         }
@@ -201,19 +203,19 @@ public class TreasureBagItem extends LootContainerItem {
         });
 
         // Play item pickup sound...
-        playerMP.world.playSound(null, playerMP.getPosX(), playerMP.getPosY(), playerMP.getPosZ(),
-                SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
-                ((playerMP.getRNG().nextFloat() - playerMP.getRNG().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        playerMP.level.playSound(null, playerMP.getX(), playerMP.getY(), playerMP.getZ(),
+                SoundEvents.ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F,
+                ((playerMP.getRandom().nextFloat() - playerMP.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
         heldItem.shrink(openWholeStack ? heldItem.getCount() : 1);
         return new ActionResult<>(ActionResultType.SUCCESS, heldItem);
     }
 
     private void giveOrDropItem(PlayerEntity playerIn, ItemStack copy) {
-        if (Config.Common.alwaysSpawnItems.get() || !playerIn.inventory.addItemStackToInventory(copy)) {
-            ItemEntity entityItem = new ItemEntity(playerIn.world, playerIn.getPosX(), playerIn.getPosYHeight(0.5), playerIn.getPosZ(), copy);
-            entityItem.setNoPickupDelay();
-            entityItem.setOwnerId(playerIn.getUniqueID());
-            playerIn.world.addEntity(entityItem);
+        if (Config.Common.alwaysSpawnItems.get() || !playerIn.inventory.add(copy)) {
+            ItemEntity entityItem = new ItemEntity(playerIn.level, playerIn.getX(), playerIn.getY(0.5), playerIn.getZ(), copy);
+            entityItem.setNoPickUpDelay();
+            entityItem.setOwner(playerIn.getUUID());
+            playerIn.level.addFreshEntity(entityItem);
         }
     }
 
@@ -249,7 +251,7 @@ public class TreasureBagItem extends LootContainerItem {
         ITextComponent itemReceivedText = new TranslationTextComponent(
                 "item.silentlib.lootContainer.itemReceived",
                 stack.getCount(),
-                stack.getDisplayName());
-        playerMP.sendMessage(itemReceivedText, Util.DUMMY_UUID);
+                stack.getHoverName());
+        playerMP.sendMessage(itemReceivedText, Util.NIL_UUID);
     }
 }

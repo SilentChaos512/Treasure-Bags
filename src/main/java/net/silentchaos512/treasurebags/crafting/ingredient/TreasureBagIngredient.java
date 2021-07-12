@@ -7,9 +7,9 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.silentchaos512.treasurebags.TreasureBags;
-import net.silentchaos512.treasurebags.setup.ModItems;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
+import net.silentchaos512.treasurebags.setup.ModItems;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;

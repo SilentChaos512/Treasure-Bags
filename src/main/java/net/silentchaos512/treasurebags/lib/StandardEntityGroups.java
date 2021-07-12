@@ -16,9 +16,9 @@ import java.util.function.Predicate;
  */
 public enum StandardEntityGroups implements IEntityGroup {
     PLAYER(e -> e instanceof PlayerEntity),
-    BOSS(e -> !e.isNonBoss()),
+    BOSS(e -> !e.canChangeDimensions()),
     HOSTILE(e -> e instanceof IMob),
-    PEACEFUL(e -> !(e instanceof PlayerEntity || !e.isNonBoss() || e instanceof IMob));
+    PEACEFUL(e -> !(e instanceof PlayerEntity || !e.canChangeDimensions() || e instanceof IMob));
 
     private final ResourceLocation lootTable;
     private final Predicate<Entity> predicate;

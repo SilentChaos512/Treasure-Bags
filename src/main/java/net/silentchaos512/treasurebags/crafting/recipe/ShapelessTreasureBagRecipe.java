@@ -35,14 +35,14 @@ public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
-        ItemStack copy = this.getBaseRecipe().getRecipeOutput().copy();
+    public ItemStack getResultItem() {
+        ItemStack copy = this.getBaseRecipe().getResultItem().copy();
         return TreasureBagItem.setBagType(copy, this.typeName);
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
-        ItemStack result = this.getRecipeOutput();
+    public ItemStack assemble(CraftingInventory inv) {
+        ItemStack result = this.getResultItem();
         if (!(result.getItem() instanceof TreasureBagItem)) {
             TreasureBags.LOGGER.warn("Result of a treasure bag recipe is not a treasure bag? Recipe '{}' crafts {}",
                     this.getId(), result);
