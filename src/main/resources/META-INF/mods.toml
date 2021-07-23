@@ -31,6 +31,6 @@ authors="SilentChaos512"
 [[dependencies.treasurebags]]
     modId="silentlib"
     mandatory=true
-    versionRange="[4,)"
+    versionRange="[4.10,5.0)"
     ordering="NONE"
     side="BOTH"

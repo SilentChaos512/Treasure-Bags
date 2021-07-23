@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2021-07-23
+### Changed
+- Updated to official Mojang mappings and Silent Lib 4.10.x (required, will not work with 4.9.x)
+
 ## [1.4.0] - 2021-05-16
 ### Added
 - Tag-based entity groups. Typing an entity type tag's ID in the `dropsFromGroups` of a bag type will now make it drop from entities with that tag.
