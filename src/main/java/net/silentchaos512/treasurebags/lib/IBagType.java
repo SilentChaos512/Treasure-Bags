@@ -2,13 +2,12 @@ package net.silentchaos512.treasurebags.lib;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.silentchaos512.treasurebags.setup.ModItems;
 
 public interface IBagType {
@@ -26,7 +25,7 @@ public interface IBagType {
 
     int getBagStringColor();
 
-    ITextComponent getCustomName();
+    Component getCustomName();
 
     ResourceLocation getLootTable();
 
@@ -37,7 +36,7 @@ public interface IBagType {
     }
 
     static ResourceLocation nameFromJson(JsonObject json) {
-        String typeStr = JSONUtils.getAsString(json, "bag_type");
+        String typeStr = GsonHelper.getAsString(json, "bag_type");
         ResourceLocation typeName = ResourceLocation.tryParse(typeStr);
         if (typeName == null) {
             throw new JsonParseException("Invalid or empty bag type: '" + typeStr + "'");

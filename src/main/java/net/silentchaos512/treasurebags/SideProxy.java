@@ -1,8 +1,8 @@
 package net.silentchaos512.treasurebags;
 
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -43,8 +43,8 @@ class SideProxy {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         InitialSpawnItems.add(STARTING_INVENTORY, p -> {
-            if (p instanceof ServerPlayerEntity) {
-                return LootUtils.gift(STARTING_INVENTORY, (ServerPlayerEntity) p);
+            if (p instanceof ServerPlayer) {
+                return LootUtils.gift(STARTING_INVENTORY, (ServerPlayer) p);
             }
             return Collections.emptyList();
         });

@@ -1,7 +1,7 @@
 package net.silentchaos512.treasurebags.api;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
 
 public interface IEntityGroup {
     ResourceLocation getId();

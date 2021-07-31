@@ -1,6 +1,6 @@
 package net.silentchaos512.treasurebags.network;
 
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.silentchaos512.treasurebags.lib.BagType;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
@@ -20,7 +20,7 @@ public class SyncBagTypesPacket {
         this.types = new ArrayList<>(types);
     }
 
-    public static SyncBagTypesPacket fromBytes(PacketBuffer buffer) {
+    public static SyncBagTypesPacket fromBytes(FriendlyByteBuf buffer) {
         SyncBagTypesPacket packet = new SyncBagTypesPacket();
         packet.types = new ArrayList<>();
         int count = buffer.readVarInt();
@@ -32,7 +32,7 @@ public class SyncBagTypesPacket {
         return packet;
     }
 
-    public void toBytes(PacketBuffer buffer) {
+    public void toBytes(FriendlyByteBuf buffer) {
         buffer.writeVarInt(this.types.size());
         this.types.forEach(type -> BagType.Serializer.write(type, buffer));
     }

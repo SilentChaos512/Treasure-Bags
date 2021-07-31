@@ -3,23 +3,29 @@ package net.silentchaos512.treasurebags.data;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.LootTableProvider;
-import net.minecraft.data.loot.EntityLootTables;
-import net.minecraft.data.loot.GiftLootTables;
-import net.minecraft.item.Items;
-import net.minecraft.item.Rarity;
-import net.minecraft.loot.*;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.loot.conditions.KilledByPlayer;
-import net.minecraft.loot.conditions.RandomChance;
-import net.minecraft.loot.functions.SetCount;
-import net.minecraft.loot.functions.SetName;
+import net.minecraft.data.loot.EntityLoot;
+import net.minecraft.data.loot.GiftLoot;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.storage.loot.*;
+import net.minecraft.world.level.storage.loot.entries.*;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.functions.SetNameFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.treasurebags.loot.SelectBagRarity;
@@ -40,46 +46,46 @@ public class ModLootTables extends LootTableProvider {
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables() {
+    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
         return ImmutableList.of(
-                Pair.of(Entities::new, LootParameterSets.ENTITY),
-                Pair.of(Gifts::new, LootParameterSets.GIFT)
+                Pair.of(Entities::new, LootContextParamSets.ENTITY),
+                Pair.of(Gifts::new, LootContextParamSets.GIFT)
         );
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationTracker validationtracker) {
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
         //map.forEach((p_218436_2_, p_218436_3_) -> LootTableManager.validateLootTable(validationtracker, p_218436_2_, p_218436_3_));
     }
 
-    private static StandaloneLootEntry.Builder<?> treasureBag(ResourceLocation bagType) {
-        return ItemLootEntry.lootTableItem(ModItems.TREASURE_BAG)
+    private static LootPoolSingletonContainer.Builder<?> treasureBag(ResourceLocation bagType) {
+        return LootItem.lootTableItem(ModItems.TREASURE_BAG)
                 .apply(SetBagTypeFunction.builder(bagType));
     }
 
-    private static StandaloneLootEntry.Builder<?> bagOfRarity(Rarity rarity) {
-        return ItemLootEntry.lootTableItem(ModItems.TREASURE_BAG)
+    private static LootPoolSingletonContainer.Builder<?> bagOfRarity(Rarity rarity) {
+        return LootItem.lootTableItem(ModItems.TREASURE_BAG)
                 .apply(SelectBagRarity.builder(rarity));
     }
 
     @Nonnull
-    private static SetName setName(ITextComponent text) {
-        Constructor<SetName> constructor = ObfuscationReflectionHelper.findConstructor(SetName.class, ILootCondition[].class, ITextComponent.class, LootContext.EntityTarget.class);
+    private static SetNameFunction setName(Component text) {
+        Constructor<SetNameFunction> constructor = ObfuscationReflectionHelper.findConstructor(SetNameFunction.class, LootItemCondition[].class, Component.class, LootContext.EntityTarget.class);
         constructor.setAccessible(true);
         try {
-            return constructor.newInstance(new ILootCondition[0], text, null);
+            return constructor.newInstance(new LootItemCondition[0], text, null);
         } catch (Exception e) {
             e.printStackTrace();
             throw new IllegalStateException(e);
         }
     }
 
-    private static LootFunction.Builder<?> setCount(int count) {
-        return SetCount.setCount(ConstantRange.exactly(count));
+    private static LootItemConditionalFunction.Builder<?> setCount(int count) {
+        return SetItemCountFunction.setCount(ConstantValue.exactly(count));
     }
 
-    private static LootFunction.Builder<?> setCount(int min, int max) {
-        return SetCount.setCount(RandomValueRange.between(min, max));
+    private static LootItemConditionalFunction.Builder<?> setCount(int min, int max) {
+        return SetItemCountFunction.setCount(UniformGenerator.between(min, max));
     }
 
     @Override
@@ -87,7 +93,7 @@ public class ModLootTables extends LootTableProvider {
         return "Treasure Bags - Loot Tables";
     }
 
-    private static class Gifts extends GiftLootTables {
+    private static class Gifts extends GiftLoot {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             consumer.accept(Const.LootTables.STARTING_INVENTORY, LootTable.lootTable()
@@ -98,62 +104,62 @@ public class ModLootTables extends LootTableProvider {
 
             consumer.accept(Const.LootTables.BAGS_SPAWN, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .add(ItemLootEntry.lootTableItem(Items.OAK_LOG)
-                                    .apply(SetCount.setCount(ConstantRange.exactly(8)))
+                            .add(LootItem.lootTableItem(Items.OAK_LOG)
+                                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(8)))
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .add(ItemLootEntry.lootTableItem(Items.APPLE)
-                                    .apply(SetCount.setCount(ConstantRange.exactly(10)))
+                            .add(LootItem.lootTableItem(Items.APPLE)
+                                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(10)))
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .add(ItemLootEntry.lootTableItem(Items.TORCH)
-                                    .apply(SetCount.setCount(ConstantRange.exactly(20)))
+                            .add(LootItem.lootTableItem(Items.TORCH)
+                                    .apply(SetItemCountFunction.setCount(ConstantValue.exactly(20)))
                             )
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_DUNGEON, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .add(TableLootEntry.lootTableReference(LootTables.SIMPLE_DUNGEON))
+                            .add(LootTableReference.lootTableReference(BuiltInLootTables.SIMPLE_DUNGEON))
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_ENDER, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
+                            .setRolls(ConstantValue.exactly(1))
                             .bonusRolls(0, 1)
-                            .add(ItemLootEntry.lootTableItem(Items.ENDER_PEARL).setWeight(40))
-                            .add(ItemLootEntry.lootTableItem(Items.ENDER_EYE).setWeight(10))
-                            .add(ItemLootEntry.lootTableItem(Items.ENDER_CHEST).setWeight(1))
+                            .add(LootItem.lootTableItem(Items.ENDER_PEARL).setWeight(40))
+                            .add(LootItem.lootTableItem(Items.ENDER_EYE).setWeight(10))
+                            .add(LootItem.lootTableItem(Items.ENDER_CHEST).setWeight(1))
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_FOOD, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(RandomValueRange.between(2, 3))
-                            .add(ItemLootEntry.lootTableItem(Items.COOKED_COD)
+                            .setRolls(UniformGenerator.between(2, 3))
+                            .add(LootItem.lootTableItem(Items.COOKED_COD)
                                     .setWeight(10)
                                     .apply(setCount(2, 4))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.COOKED_SALMON)
+                            .add(LootItem.lootTableItem(Items.COOKED_SALMON)
                                     .setWeight(10)
                                     .apply(setCount(2, 4))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.COOKED_PORKCHOP)
+                            .add(LootItem.lootTableItem(Items.COOKED_PORKCHOP)
                                     .setWeight(7)
                                     .apply(setCount(1, 3))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.COOKED_BEEF)
+                            .add(LootItem.lootTableItem(Items.COOKED_BEEF)
                                     .setWeight(7)
                                     .apply(setCount(1, 3))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.COOKED_CHICKEN)
+                            .add(LootItem.lootTableItem(Items.COOKED_CHICKEN)
                                     .setWeight(8)
                                     .apply(setCount(2, 4))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BREAD)
+                            .add(LootItem.lootTableItem(Items.BREAD)
                                     .setWeight(12)
                                     .apply(setCount(2, 6))
                             )
@@ -162,17 +168,17 @@ public class ModLootTables extends LootTableProvider {
 
             consumer.accept(Const.LootTables.BAGS_INGOTS, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(RandomValueRange.between(1, 2))
+                            .setRolls(UniformGenerator.between(1, 2))
                             .bonusRolls(0, 1)
-                            .add(ItemLootEntry.lootTableItem(Items.IRON_INGOT)
+                            .add(LootItem.lootTableItem(Items.IRON_INGOT)
                                     .setWeight(30)
-                                    .apply(SetCount.setCount(RandomValueRange.between(2, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.GOLD_INGOT)
+                            .add(LootItem.lootTableItem(Items.GOLD_INGOT)
                                     .setWeight(15)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 2)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
-                            .add(TagLootEntry.expandTag(Tags.Items.INGOTS)
+                            .add(TagEntry.expandTag(Tags.Items.INGOTS)
                                     .setWeight(1)
                             )
                     )
@@ -180,171 +186,171 @@ public class ModLootTables extends LootTableProvider {
 
             consumer.accept(Const.LootTables.BAGS_LITERACY, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(RandomValueRange.between(1, 2))
-                            .add(ItemLootEntry.lootTableItem(Items.BOOK)
+                            .setRolls(UniformGenerator.between(1, 2))
+                            .add(LootItem.lootTableItem(Items.BOOK)
                                     .setWeight(12)
-                                    .apply(SetCount.setCount(RandomValueRange.between(2, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.PAPER)
+                            .add(LootItem.lootTableItem(Items.PAPER)
                                     .setWeight(15)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 10)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 10)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BOOKSHELF)
+                            .add(LootItem.lootTableItem(Items.BOOKSHELF)
                                     .setWeight(3)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 2)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.WRITABLE_BOOK)
+                            .add(LootItem.lootTableItem(Items.WRITABLE_BOOK)
                                     .setWeight(1)
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .when(RandomChance.randomChance(0.5f))
-                            .add(ItemLootEntry.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new StringTextComponent("That Time I Was Slapped With a Salmon, Vol. 4")))
+                            .when(LootItemRandomChanceCondition.randomChance(0.5f))
+                            .add(LootItem.lootTableItem(Items.BOOK)
+                                    .apply(() -> setName(new TextComponent("That Time I Was Slapped With a Salmon, Vol. 4")))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new StringTextComponent("The Adventures of Tardigrade Man")))
+                            .add(LootItem.lootTableItem(Items.BOOK)
+                                    .apply(() -> setName(new TextComponent("The Adventures of Tardigrade Man")))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new StringTextComponent("Reading For Dummies")))
+                            .add(LootItem.lootTableItem(Items.BOOK)
+                                    .apply(() -> setName(new TextComponent("Reading For Dummies")))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new StringTextComponent("The Story of Larry the Sheep")))
+                            .add(LootItem.lootTableItem(Items.BOOK)
+                                    .apply(() -> setName(new TextComponent("The Story of Larry the Sheep")))
                             )
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_NATURE, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(Items.SUGAR_CANE)
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(Items.SUGAR_CANE)
                                     .setWeight(10)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.GRASS)
+                            .add(LootItem.lootTableItem(Items.GRASS)
                                     .setWeight(12)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 12)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 12)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.FERN)
+                            .add(LootItem.lootTableItem(Items.FERN)
                                     .setWeight(8)
-                                    .apply(SetCount.setCount(RandomValueRange.between(2, 5)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 5)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.VINE)
+                            .add(LootItem.lootTableItem(Items.VINE)
                                     .setWeight(7)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.LILY_PAD)
+                            .add(LootItem.lootTableItem(Items.LILY_PAD)
                                     .setWeight(6)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 3)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.CACTUS)
+                            .add(LootItem.lootTableItem(Items.CACTUS)
                                     .setWeight(5)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 3)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.PUMPKIN)
+                            .add(LootItem.lootTableItem(Items.PUMPKIN)
                                     .setWeight(3)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 2)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.MELON)
+                            .add(LootItem.lootTableItem(Items.MELON)
                                     .setWeight(3)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 2)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .setRolls(RandomValueRange.between(1, 2))
-                            .add(ItemLootEntry.lootTableItem(Items.CARROT)
+                            .setRolls(UniformGenerator.between(1, 2))
+                            .add(LootItem.lootTableItem(Items.CARROT)
                                     .setWeight(5)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.POTATO)
+                            .add(LootItem.lootTableItem(Items.POTATO)
                                     .setWeight(5)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.COCOA_BEANS)
+                            .add(LootItem.lootTableItem(Items.COCOA_BEANS)
                                     .setWeight(2)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 2)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
-                            .add(TagLootEntry.expandTag(Tags.Items.SEEDS)
+                            .add(TagEntry.expandTag(Tags.Items.SEEDS)
                                     .setWeight(10)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
-                            .add(TagLootEntry.expandTag(Tags.Items.CROPS)
+                            .add(TagEntry.expandTag(Tags.Items.CROPS)
                                     .setWeight(5)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 4)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 4)))
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(TagLootEntry.expandTag(ItemTags.SAPLINGS)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 3)))
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(TagEntry.expandTag(ItemTags.SAPLINGS)
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)))
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(TagLootEntry.expandTag(ItemTags.FLOWERS)
-                                    .apply(SetCount.setCount(RandomValueRange.between(1, 3)))
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(TagEntry.expandTag(ItemTags.FLOWERS)
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 3)))
                             )
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_PLAYER, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .add(ItemLootEntry.lootTableItem(Items.GOLDEN_APPLE))
+                            .add(LootItem.lootTableItem(Items.GOLDEN_APPLE))
                     )
             );
 
             consumer.accept(Const.LootTables.BAGS_STICKS_AND_STONES, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(Items.STICK)
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(Items.STICK)
                                     .setWeight(15)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 8)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8)))
                             )
-                            .add(TagLootEntry.expandTag(Tags.Items.RODS)
+                            .add(TagEntry.expandTag(Tags.Items.RODS)
                                     .setWeight(1)
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
+                            .setRolls(ConstantValue.exactly(1))
                             .bonusRolls(0, 1)
-                            .add(ItemLootEntry.lootTableItem(Items.COBBLESTONE)
+                            .add(LootItem.lootTableItem(Items.COBBLESTONE)
                                     .setWeight(72)
-                                    .apply(SetCount.setCount(RandomValueRange.between(6, 12)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(6, 12)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.STONE)
+                            .add(LootItem.lootTableItem(Items.STONE)
                                     .setWeight(48)
-                                    .apply(SetCount.setCount(RandomValueRange.between(3, 7)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 7)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.ANDESITE)
+                            .add(LootItem.lootTableItem(Items.ANDESITE)
                                     .setWeight(30)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 8)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.DIORITE)
+                            .add(LootItem.lootTableItem(Items.DIORITE)
                                     .setWeight(30)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 8)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.GRANITE)
+                            .add(LootItem.lootTableItem(Items.GRANITE)
                                     .setWeight(30)
-                                    .apply(SetCount.setCount(RandomValueRange.between(4, 8)))
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(4, 8)))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.DIAMOND)
+                            .add(LootItem.lootTableItem(Items.DIAMOND)
                                     .setWeight(1)
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.EMERALD)
+                            .add(LootItem.lootTableItem(Items.EMERALD)
                                     .setWeight(1)
                             )
                     )
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(Items.BONE)
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(Items.BONE)
                                     .setWeight(10)
                                     .apply(setCount(2, 4))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BONE_MEAL)
+                            .add(LootItem.lootTableItem(Items.BONE_MEAL)
                                     .setWeight(4)
                                     .apply(setCount(3, 8))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.BONE_BLOCK)
+                            .add(LootItem.lootTableItem(Items.BONE_BLOCK)
                                     .setWeight(1)
                                     .apply(setCount(1, 2))
                             )
@@ -353,8 +359,8 @@ public class ModLootTables extends LootTableProvider {
 
             consumer.accept(Const.LootTables.BAGS_DEFAULT, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(Items.STICK)
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(Items.STICK)
                                     .apply(setCount(4))
                             )
                     )
@@ -362,25 +368,25 @@ public class ModLootTables extends LootTableProvider {
 
             consumer.accept(Const.LootTables.BAGS_TEST, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(1))
-                            .add(ItemLootEntry.lootTableItem(Items.IRON_INGOT)
+                            .setRolls(ConstantValue.exactly(1))
+                            .add(LootItem.lootTableItem(Items.IRON_INGOT)
                                     .apply(setCount(5))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.GOLD_INGOT)
+                            .add(LootItem.lootTableItem(Items.GOLD_INGOT)
                                     .apply(setCount(2))
                             )
-                            .add(ItemLootEntry.lootTableItem(Items.DIAMOND))
+                            .add(LootItem.lootTableItem(Items.DIAMOND))
                     )
             );
         }
     }
 
-    private static class Entities extends EntityLootTables {
+    private static class Entities extends EntityLoot {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             consumer.accept(StandardEntityGroups.BOSS.getLootTable(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .setRolls(ConstantRange.exactly(2))
+                            .setRolls(ConstantValue.exactly(2))
                             .add(bagOfRarity(Rarity.COMMON)
                                     .setWeight(3)
                             )
@@ -397,7 +403,7 @@ public class ModLootTables extends LootTableProvider {
             );
             consumer.accept(StandardEntityGroups.HOSTILE.getLootTable(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .add(EmptyLootEntry.emptyItem()
+                            .add(EmptyLootItem.emptyItem()
                                     .setWeight(200)
                             )
                             .add(bagOfRarity(Rarity.COMMON)
@@ -416,7 +422,7 @@ public class ModLootTables extends LootTableProvider {
             );
             consumer.accept(StandardEntityGroups.PEACEFUL.getLootTable(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .add(EmptyLootEntry.emptyItem()
+                            .add(EmptyLootItem.emptyItem()
                                     .setWeight(500)
                             )
                             .add(bagOfRarity(Rarity.COMMON)
@@ -435,7 +441,7 @@ public class ModLootTables extends LootTableProvider {
             );
             consumer.accept(StandardEntityGroups.PLAYER.getLootTable(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
-                            .when(KilledByPlayer.killedByPlayer())
+                            .when(LootItemKilledByPlayerCondition.killedByPlayer())
                             .add(treasureBag(Const.Bags.PLAYER))
                     )
             );

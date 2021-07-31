@@ -1,13 +1,13 @@
 package net.silentchaos512.treasurebags.lib;
 
 import com.google.gson.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.Rarity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.api.IEntityGroup;
 import net.silentchaos512.treasurebags.setup.EntityGroups;
@@ -24,7 +24,7 @@ public final class BagType implements IBagType {
     private int bagColor;
     private int bagOverlayColor;
     private int bagStringColor;
-    private ITextComponent customName;
+    private Component customName;
     private ResourceLocation lootTable;
     private boolean visible;
 
@@ -73,7 +73,7 @@ public final class BagType implements IBagType {
     }
 
     @Override
-    public ITextComponent getCustomName() {
+    public Component getCustomName() {
         return customName;
     }
 
@@ -93,19 +93,19 @@ public final class BagType implements IBagType {
         public static BagType deserialize(ResourceLocation name, JsonObject json) {
             BagType result = new BagType(name);
 
-            String tableName = JSONUtils.getAsString(json, "lootTable");
+            String tableName = GsonHelper.getAsString(json, "lootTable");
             ResourceLocation lootTable = ResourceLocation.tryParse(tableName);
             if (lootTable == null) {
                 throw new JsonParseException("Invalid loot table: " + tableName);
             }
             result.lootTable = lootTable;
-            result.rarity = deserializeRarity(JSONUtils.getAsString(json, "rarity"));
-            result.customName = ITextComponent.Serializer.fromJson(json.get("displayName"));
+            result.rarity = deserializeRarity(GsonHelper.getAsString(json, "rarity"));
+            result.customName = Component.Serializer.fromJson(json.get("displayName"));
             result.bagColor = Color.from(json, "bagColor", 0xFFFFFF).getColor();
             result.bagOverlayColor = Color.from(json, "bagOverlayColor", 0xFFFFFF).getColor();
             result.bagStringColor = Color.from(json, "bagStringColor", 0xFFFFFF).getColor();
-            result.visible = JSONUtils.getAsBoolean(json, "visible", true);
-            result.group = JSONUtils.getAsString(json, "group");
+            result.visible = GsonHelper.getAsBoolean(json, "visible", true);
+            result.group = GsonHelper.getAsString(json, "group");
 
             JsonElement dropsFromJson = json.get("dropsFromGroups");
             if (dropsFromJson != null && dropsFromJson.isJsonArray()) {
@@ -124,7 +124,7 @@ public final class BagType implements IBagType {
             return result;
         }
 
-        public static BagType read(PacketBuffer buffer) {
+        public static BagType read(FriendlyByteBuf buffer) {
             BagType bagType = new BagType(buffer.readResourceLocation());
             bagType.lootTable = buffer.readResourceLocation();
             bagType.rarity = buffer.readEnum(Rarity.class);
@@ -142,7 +142,7 @@ public final class BagType implements IBagType {
             return bagType;
         }
 
-        public static void write(IBagType bagType, PacketBuffer buffer) {
+        public static void write(IBagType bagType, FriendlyByteBuf buffer) {
             buffer.writeResourceLocation(bagType.getId());
             buffer.writeResourceLocation(bagType.getLootTable());
             buffer.writeEnum(bagType.getRarity());

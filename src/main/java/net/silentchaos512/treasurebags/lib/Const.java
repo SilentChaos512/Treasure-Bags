@@ -1,6 +1,6 @@
 package net.silentchaos512.treasurebags.lib;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.silentchaos512.treasurebags.TreasureBags;
 
 public class Const {

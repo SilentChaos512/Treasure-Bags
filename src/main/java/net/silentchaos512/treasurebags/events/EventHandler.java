@@ -1,20 +1,20 @@
 package net.silentchaos512.treasurebags.events;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.LootTable;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +35,7 @@ public final class EventHandler {
         if (!(event.getEntity() instanceof LivingEntity)) return;
 
         LivingEntity entity = (LivingEntity) event.getEntity();
-        World world = entity.level;
+        Level world = entity.level;
         if (world.isClientSide) return;
         MinecraftServer server = world.getServer();
         if (server == null) return;
@@ -43,25 +43,25 @@ public final class EventHandler {
         // Mob loot disabled?
         if (!world.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) return;
 
-        PlayerEntity player = getPlayerThatCausedDeath(event.getSource());
+        Player player = getPlayerThatCausedDeath(event.getSource());
 
         // Get the bonus drops loot table for this mob type
         EntityGroups.getGroups(entity).forEach(group -> doDropsForGroup(event, entity, world, server, player, group));
     }
 
-    private static void doDropsForGroup(LivingDropsEvent event, LivingEntity entity, World world, MinecraftServer server, PlayerEntity player, IEntityGroup group) {
+    private static void doDropsForGroup(LivingDropsEvent event, LivingEntity entity, Level world, MinecraftServer server, Player player, IEntityGroup group) {
         LootTable lootTable = server.getLootTables().get(group.getLootTable());
-        LootContext.Builder contextBuilder = new LootContext.Builder((ServerWorld) world)
-                .withParameter(LootParameters.THIS_ENTITY, entity)
-                .withParameter(LootParameters.ORIGIN, entity.position())
-                .withParameter(LootParameters.DAMAGE_SOURCE, event.getSource())
-                .withOptionalParameter(LootParameters.KILLER_ENTITY, player)
-                .withOptionalParameter(LootParameters.LAST_DAMAGE_PLAYER, player)
-                .withOptionalParameter(LootParameters.DIRECT_KILLER_ENTITY, event.getSource().getDirectEntity());
+        LootContext.Builder contextBuilder = new LootContext.Builder((ServerLevel) world)
+                .withParameter(LootContextParams.THIS_ENTITY, entity)
+                .withParameter(LootContextParams.ORIGIN, entity.position())
+                .withParameter(LootContextParams.DAMAGE_SOURCE, event.getSource())
+                .withOptionalParameter(LootContextParams.KILLER_ENTITY, player)
+                .withOptionalParameter(LootContextParams.LAST_DAMAGE_PLAYER, player)
+                .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, event.getSource().getDirectEntity());
         if (player != null) {
             contextBuilder.withLuck(player.getLuck());
         }
-        List<ItemStack> list = lootTable.getRandomItems(contextBuilder.create(LootParameterSets.ENTITY));
+        List<ItemStack> list = lootTable.getRandomItems(contextBuilder.create(LootContextParamSets.ENTITY));
         list.forEach(stack -> event.getDrops().add(new ItemEntity(world, entity.getX(), entity.getY(), entity.getZ(), stack)));
     }
 
@@ -74,20 +74,20 @@ public final class EventHandler {
      */
     @SuppressWarnings("ChainOfInstanceofChecks")
     @Nullable
-    private static PlayerEntity getPlayerThatCausedDeath(DamageSource source) {
+    private static Player getPlayerThatCausedDeath(DamageSource source) {
         if (source == null) return null;
 
         // Player is true source?
         Entity entitySource = source.getEntity();
-        if (entitySource instanceof PlayerEntity) {
-            return (PlayerEntity) entitySource;
+        if (entitySource instanceof Player) {
+            return (Player) entitySource;
         }
 
         // Player's pet is true source?
-        if (entitySource instanceof TameableEntity) {
-            TameableEntity tamed = (TameableEntity) entitySource;
-            if (tamed.isTame() && tamed.getOwner() instanceof PlayerEntity) {
-                return (PlayerEntity) tamed.getOwner();
+        if (entitySource instanceof TamableAnimal) {
+            TamableAnimal tamed = (TamableAnimal) entitySource;
+            if (tamed.isTame() && tamed.getOwner() instanceof Player) {
+                return (Player) tamed.getOwner();
             }
         }
 

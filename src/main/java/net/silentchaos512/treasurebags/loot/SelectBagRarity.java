@@ -3,15 +3,16 @@ package net.silentchaos512.treasurebags.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootFunction;
-import net.minecraft.loot.LootFunctionType;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.lib.BagType;
@@ -23,23 +24,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import net.minecraft.loot.functions.ILootFunction.IBuilder;
-
-public class SelectBagRarity extends LootFunction {
+public class SelectBagRarity extends LootItemConditionalFunction {
     private final Rarity rarity;
 
-    public SelectBagRarity(Rarity rarity, ILootCondition[] conditions) {
+    public SelectBagRarity(Rarity rarity, LootItemCondition[] conditions) {
         super(conditions);
         this.rarity = rarity;
     }
 
-    public static IBuilder builder(Rarity rarity, ILootCondition... conditions) {
-        return () -> new SelectBagRarity(rarity, conditions);
+    public static Builder builder(Rarity rarity, LootItemCondition... conditions) {
+        return new Builder() {
+            @Override
+            protected Builder getThis() {
+                return this;
+            }
+
+            @Override
+            public LootItemFunction build() {
+                return new SelectBagRarity(rarity, conditions);
+            }
+        };
     }
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        Entity entity = context.getParamOrNull(LootParameters.THIS_ENTITY);
+        Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
         if (entity == null) return ItemStack.EMPTY;
 
         List<IBagType> list = BagTypeManager.getValues().stream()
@@ -52,11 +61,11 @@ public class SelectBagRarity extends LootFunction {
     }
 
     @Override
-    public LootFunctionType getType() {
+    public LootItemFunctionType getType() {
         return ModLoot.SELECT_BAG_RARITY;
     }
 
-    public static class Serializer extends LootFunction.Serializer<SelectBagRarity> {
+    public static class Serializer extends LootItemConditionalFunction.Serializer<SelectBagRarity> {
         @Override
         public void serialize(JsonObject json, SelectBagRarity function, JsonSerializationContext serializationContext) {
             super.serialize(json, function, serializationContext);
@@ -64,8 +73,8 @@ public class SelectBagRarity extends LootFunction {
         }
 
         @Override
-        public SelectBagRarity deserialize(JsonObject json, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
-            Rarity rarity = BagType.Serializer.deserializeRarity(JSONUtils.getAsString(json, "rarity"));
+        public SelectBagRarity deserialize(JsonObject json, JsonDeserializationContext deserializationContext, LootItemCondition[] conditionsIn) {
+            Rarity rarity = BagType.Serializer.deserializeRarity(GsonHelper.getAsString(json, "rarity"));
             return new SelectBagRarity(rarity, conditionsIn);
         }
 

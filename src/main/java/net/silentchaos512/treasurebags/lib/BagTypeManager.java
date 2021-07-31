@@ -4,18 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.resources.IResourceManagerReloadListener;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.config.Config;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @SuppressWarnings("deprecation")
-public final class BagTypeManager implements IResourceManagerReloadListener {
+public final class BagTypeManager implements ResourceManagerReloadListener {
     public static final BagTypeManager INSTANCE = new BagTypeManager();
     private static final Marker MARKER = MarkerManager.getMarker("BagTypeManager");
     private static final String RESOURCES_PATH = "treasurebags_types";
@@ -60,7 +60,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(ResourceManager resourceManager) {
         Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
         Collection<ResourceLocation> resources = resourceManager.listResources(
                 RESOURCES_PATH, s -> s.endsWith(".json"));
@@ -73,12 +73,12 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
             String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
             ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
 
-            try (IResource iresource = resourceManager.getResource(id)) {
+            try (Resource iresource = resourceManager.getResource(id)) {
                 if (TreasureBags.LOGGER.isTraceEnabled()) {
                     TreasureBags.LOGGER.trace(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
                 }
 
-                JsonObject json = JSONUtils.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
+                JsonObject json = GsonHelper.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
                 if (json == null) {
                     TreasureBags.LOGGER.error(MARKER, "Could not load bag type {} as it's null or empty", name);
                 } else {
@@ -118,14 +118,14 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         context.get().setPacketHandled(true);
     }
 
-    public static Collection<ITextComponent> getErrorMessages(ServerPlayerEntity player) {
-        Collection<ITextComponent> messages = new ArrayList<>();
+    public static Collection<Component> getErrorMessages(ServerPlayer player) {
+        Collection<Component> messages = new ArrayList<>();
 
         // Bag type files that failed to load
         if (!ERROR_LIST.isEmpty()) {
             String listStr = String.join(", ", ERROR_LIST);
             messages.add(errorMessage("The following bag types failed to load, check your log file:"));
-            messages.add(new StringTextComponent(listStr));
+            messages.add(new TextComponent(listStr));
         }
 
         // Loot tables that failed to load or are missing
@@ -140,7 +140,7 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         return messages;
     }
 
-    private static int countMissingLootTables(ServerPlayerEntity player) {
+    private static int countMissingLootTables(ServerPlayer player) {
         MinecraftServer server = player.level.getServer();
         if (server == null) return 0;
 
@@ -148,8 +148,8 @@ public final class BagTypeManager implements IResourceManagerReloadListener {
         return (int) MAP.values().stream().filter(bagType -> !lootTables.contains(bagType.getLootTable())).count();
     }
 
-    private static ITextComponent errorMessage(String str) {
-        return new StringTextComponent("[Treasure Bags] ").withStyle(TextFormatting.YELLOW)
-                .append(new StringTextComponent(str).withStyle(TextFormatting.WHITE));
+    private static Component errorMessage(String str) {
+        return new TextComponent("[Treasure Bags] ").withStyle(ChatFormatting.YELLOW)
+                .append(new TextComponent(str).withStyle(ChatFormatting.WHITE));
     }
 }

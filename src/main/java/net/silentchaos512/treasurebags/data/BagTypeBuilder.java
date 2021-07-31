@@ -2,10 +2,10 @@ package net.silentchaos512.treasurebags.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.api.IEntityGroup;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
@@ -20,7 +20,7 @@ public class BagTypeBuilder {
     private final ResourceLocation lootTable;
     private final Collection<IEntityGroup> dropsFromGroups = new LinkedHashSet<>();
     private boolean noMobDrops = false;
-    private ITextComponent displayName;
+    private Component displayName;
     private int bagColor;
     private int bagOverlayColor;
     private int bagStringColor;
@@ -35,7 +35,7 @@ public class BagTypeBuilder {
         this.group = group;
         this.rarity = rarity;
         this.lootTable = lootTable;
-        this.displayName = new TranslationTextComponent(String.format("bag.%s.%s", this.bagTypeId.getNamespace(), this.bagTypeId.getPath()));
+        this.displayName = new TranslatableComponent(String.format("bag.%s.%s", this.bagTypeId.getNamespace(), this.bagTypeId.getPath()));
     }
 
     /**
@@ -63,7 +63,7 @@ public class BagTypeBuilder {
         return this;
     }
 
-    public BagTypeBuilder displayName(ITextComponent text) {
+    public BagTypeBuilder displayName(Component text) {
         this.displayName = text;
         return this;
     }
@@ -82,7 +82,7 @@ public class BagTypeBuilder {
     public JsonObject serialize() {
         JsonObject json = new JsonObject();
         json.addProperty("group", this.group);
-        json.add("displayName", ITextComponent.Serializer.toJsonTree(this.displayName));
+        json.add("displayName", Component.Serializer.toJsonTree(this.displayName));
         json.addProperty("lootTable", this.lootTable.toString());
         json.addProperty("rarity", this.rarity.name().toLowerCase(Locale.ROOT));
         json.addProperty("bagColor", Color.format(this.bagColor & 0xFFFFFF));

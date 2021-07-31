@@ -1,9 +1,9 @@
 package net.silentchaos512.treasurebags.lib;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.api.IEntityGroup;
 
@@ -15,10 +15,10 @@ import java.util.function.Predicate;
  * has a loot table.
  */
 public enum StandardEntityGroups implements IEntityGroup {
-    PLAYER(e -> e instanceof PlayerEntity),
+    PLAYER(e -> e instanceof Player),
     BOSS(e -> !e.canChangeDimensions()),
-    HOSTILE(e -> e instanceof IMob),
-    PEACEFUL(e -> !(e instanceof PlayerEntity || !e.canChangeDimensions() || e instanceof IMob));
+    HOSTILE(e -> e instanceof Enemy),
+    PEACEFUL(e -> !(e instanceof Player || !e.canChangeDimensions() || e instanceof Enemy));
 
     private final ResourceLocation lootTable;
     private final Predicate<Entity> predicate;

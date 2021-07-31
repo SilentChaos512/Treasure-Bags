@@ -4,18 +4,18 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
 plugins {
-    id 'maven'
     id 'maven-publish'
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 repositories {
     flatDir {
@@ -46,10 +46,10 @@ def gpr_creds = { // Credentials for GitHub Packages, since this is used multipl
     password = property('gpr.token')
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings channel: project.mcp_channel.toString(), version: project.mcp_mappings.toString()
+    mappings channel: 'official', version: mc_version
 
     runs {
         client {
@@ -120,7 +120,10 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${project.forge_version}"
 
-    compile fg.deobf("net.silentchaos512:silent-lib:${project.sl_version}") {
+    compileOnly fg.deobf("net.silentchaos512:silent-lib:${project.sl_version}") {
+        exclude module: "forge"
+    }
+    runtimeOnly fg.deobf("net.silentchaos512:silent-lib:${project.sl_version}") {
         exclude module: "forge"
     }
 

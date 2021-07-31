@@ -1,9 +1,10 @@
+/*
 package net.silentchaos512.treasurebags.compat.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.setup.ModItems;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
@@ -26,3 +27,4 @@ public class TreasureBagsJeiPlugin implements IModPlugin {
         });
     }
 }
+*/

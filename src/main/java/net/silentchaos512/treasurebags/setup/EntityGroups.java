@@ -1,7 +1,7 @@
 package net.silentchaos512.treasurebags.setup;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.resources.ResourceLocation;
 import net.silentchaos512.treasurebags.api.IEntityGroup;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 

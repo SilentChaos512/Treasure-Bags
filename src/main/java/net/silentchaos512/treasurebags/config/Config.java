@@ -2,12 +2,10 @@ package net.silentchaos512.treasurebags.config;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.silentchaos512.treasurebags.TreasureBags;
-import net.silentchaos512.treasurebags.lib.IBagType;
 
 import java.util.List;
 
@@ -71,7 +69,7 @@ public final class Config {
     public static void sync() {
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void sync(ModConfig.Loading event) {
         sync();
     }
@@ -79,5 +77,5 @@ public final class Config {
     @SubscribeEvent
     public static void sync(ModConfig.Reloading event) {
         sync();
-    }
+    }*/
 }

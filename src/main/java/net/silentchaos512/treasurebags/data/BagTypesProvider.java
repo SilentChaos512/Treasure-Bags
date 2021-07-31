@@ -3,10 +3,10 @@ package net.silentchaos512.treasurebags.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.data.HashCache;
+import net.minecraft.data.DataProvider;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.network.chat.TextComponent;
 import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BagTypesProvider implements IDataProvider {
+public class BagTypesProvider implements DataProvider {
     static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
     private final DataGenerator generator;
@@ -86,20 +86,20 @@ public class BagTypesProvider implements IDataProvider {
         ret.add(new BagTypeBuilder(Const.Bags.DEFAULT, "example", Rarity.COMMON, Const.LootTables.BAGS_DEFAULT)
                 .noMobDrops()
                 .colors(Color.WHITE, Color.WHITE, Color.WHITE)
-                .displayName(new StringTextComponent("Treasure Bag"))
+                .displayName(new TextComponent("Treasure Bag"))
         );
 
         ret.add(new BagTypeBuilder(Const.Bags.TEST, "example", Rarity.COMMON, Const.LootTables.BAGS_TEST)
                 .noMobDrops()
                 .colors(0xFF00FF, 0X00FF00, 0XB8860B)
-                .displayName(new StringTextComponent("Test Bag"))
+                .displayName(new TextComponent("Test Bag"))
         );
 
         return ret;
     }
 
     @Override
-    public void run(DirectoryCache cache) {
+    public void run(HashCache cache) {
         Path outputFolder = this.generator.getOutputFolder();
 
         for (BagTypeBuilder builder : getBagTypes()) {
