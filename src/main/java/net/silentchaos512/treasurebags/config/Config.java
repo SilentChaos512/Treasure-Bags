@@ -65,17 +65,4 @@ public final class Config {
     public static void init() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Common.spec);
     }
-
-    public static void sync() {
-    }
-
-    /*@SubscribeEvent
-    public static void sync(ModConfig.Loading event) {
-        sync();
-    }
-
-    @SubscribeEvent
-    public static void sync(ModConfig.Reloading event) {
-        sync();
-    }*/
 }

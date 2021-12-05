@@ -3,7 +3,7 @@ package net.silentchaos512.treasurebags.setup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.silentchaos512.lib.crafting.recipe.ExtendedShapedRecipe;
 import net.silentchaos512.lib.crafting.recipe.ExtendedShapelessRecipe;
 import net.silentchaos512.treasurebags.TreasureBags;

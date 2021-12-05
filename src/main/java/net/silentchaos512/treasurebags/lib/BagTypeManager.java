@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.config.Config;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;

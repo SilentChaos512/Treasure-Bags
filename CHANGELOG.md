@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2021-12-05
+- Updated to Minecraft 1.18
+
+## [1.5.0] - 2021-07-31
+- Updated to Minecraft 1.17.1
+
 ## [1.4.1] - 2021-07-23
 ### Changed
 - Updated to official Mojang mappings and Silent Lib 4.10.x (required, will not work with 4.9.x)
