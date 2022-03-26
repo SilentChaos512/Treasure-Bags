@@ -1,6 +1,8 @@
 package net.silentchaos512.treasurebags.lib;
 
 import com.google.gson.*;
+import net.minecraft.core.Registry;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.network.FriendlyByteBuf;
@@ -169,7 +171,7 @@ public final class BagType implements IBagType {
         }
 
         private static IEntityGroup getOrCreateEntityGroup(ResourceLocation id) {
-            return new TagEntityGroup(id, EntityTypeTags.bind(id.toString()));
+            return new TagEntityGroup(id, TagKey.create(Registry.ENTITY_TYPE_REGISTRY, id));
         }
     }
 }
