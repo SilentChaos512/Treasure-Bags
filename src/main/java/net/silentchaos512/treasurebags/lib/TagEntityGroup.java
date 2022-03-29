@@ -1,5 +1,6 @@
 package net.silentchaos512.treasurebags.lib;
 
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.tags.Tag;
@@ -9,9 +10,9 @@ import net.silentchaos512.treasurebags.api.IEntityGroup;
 
 public class TagEntityGroup implements IEntityGroup {
     private final ResourceLocation groupId;
-    private final Tag<EntityType<?>> entityTypeTag;
+    private final TagKey<EntityType<?>> entityTypeTag;
 
-    public TagEntityGroup(ResourceLocation groupId, Tag<EntityType<?>> entityTypeTag) {
+    public TagEntityGroup(ResourceLocation groupId, TagKey<EntityType<?>> entityTypeTag) {
         this.groupId = groupId;
         this.entityTypeTag = entityTypeTag;
     }
@@ -23,7 +24,7 @@ public class TagEntityGroup implements IEntityGroup {
 
     @Override
     public boolean matches(Entity entity) {
-        return this.entityTypeTag.contains(entity.getType());
+        return entity.getType().is(this.entityTypeTag);
     }
 
     @Override

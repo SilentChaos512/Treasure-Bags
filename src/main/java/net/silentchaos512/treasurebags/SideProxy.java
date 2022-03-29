@@ -3,6 +3,7 @@ package net.silentchaos512.treasurebags;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -32,10 +33,10 @@ class SideProxy {
         Registration.register();
         Config.init();
         Network.init();
-        ModLoot.register();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(DataGenerators::gatherData);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, ModLoot::register);
 
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);

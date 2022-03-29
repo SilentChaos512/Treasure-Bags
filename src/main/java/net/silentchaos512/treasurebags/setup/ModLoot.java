@@ -1,7 +1,9 @@
 package net.silentchaos512.treasurebags.setup;
 
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.core.Registry;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraftforge.event.RegistryEvent;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.loot.SelectBagRarity;
 import net.silentchaos512.treasurebags.loot.SetBagTypeFunction;
@@ -12,7 +14,7 @@ public final class ModLoot {
 
     private ModLoot() {}
 
-    public static void register() {
+    public static void register(RegistryEvent<Item> event) {
         Registry.register(Registry.LOOT_FUNCTION_TYPE, TreasureBags.getId("select_bag_rarity"), SELECT_BAG_RARITY);
         Registry.register(Registry.LOOT_FUNCTION_TYPE, TreasureBags.getId("set_bag_type"), SET_BAG_TYPE);
     }
