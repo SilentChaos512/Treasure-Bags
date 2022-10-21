@@ -2,16 +2,18 @@ package net.silentchaos512.treasurebags.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Rarity;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.api.IEntityGroup;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Locale;
 
 public class BagTypeBuilder {
     final ResourceLocation bagTypeId;
@@ -35,7 +37,7 @@ public class BagTypeBuilder {
         this.group = group;
         this.rarity = rarity;
         this.lootTable = lootTable;
-        this.displayName = new TranslatableComponent(String.format("bag.%s.%s", this.bagTypeId.getNamespace(), this.bagTypeId.getPath()));
+        this.displayName = Component.translatable(String.format("bag.%s.%s", this.bagTypeId.getNamespace(), this.bagTypeId.getPath()));
     }
 
     /**

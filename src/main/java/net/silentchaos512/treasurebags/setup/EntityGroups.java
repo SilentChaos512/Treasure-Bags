@@ -15,7 +15,7 @@ public final class EntityGroups {
 
     private EntityGroups() {}
 
-    static void init() {
+    public static void init() {
         for (StandardEntityGroups group : StandardEntityGroups.values()) {
             create(group);
         }

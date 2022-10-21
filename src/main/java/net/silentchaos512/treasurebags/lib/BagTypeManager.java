@@ -3,10 +3,8 @@ package net.silentchaos512.treasurebags.lib;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,11 +25,9 @@ import org.apache.logging.log4j.MarkerManager;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public final class BagTypeManager implements ResourceManagerReloadListener {
@@ -40,7 +36,7 @@ public final class BagTypeManager implements ResourceManagerReloadListener {
     private static final String RESOURCES_PATH = "treasurebags_types";
 
     private static final Map<ResourceLocation, IBagType> MAP = new LinkedHashMap<>();
-    private static final Collection<String> ERROR_LIST = new ArrayList<>();
+    private static final Collection<ResourceLocation> ERROR_LIST = new ArrayList<>();
 
     private BagTypeManager() {}
 
@@ -62,43 +58,47 @@ public final class BagTypeManager implements ResourceManagerReloadListener {
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         Gson gson = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-        Collection<ResourceLocation> resources = resourceManager.listResources(
-                RESOURCES_PATH, s -> s.endsWith(".json"));
+        Map<ResourceLocation, Resource> resources = resourceManager.listResources(RESOURCES_PATH, s -> s.toString().endsWith(".json"));
         if (resources.isEmpty()) return;
 
         MAP.clear();
         ERROR_LIST.clear();
+        TreasureBags.LOGGER.info(MARKER, "Reloading bag type files");
 
-        for (ResourceLocation id : resources) {
-            String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
-            ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
+        synchronized (MAP) {
+            for (ResourceLocation id : resources.keySet()) {
+                String path = id.getPath().substring(RESOURCES_PATH.length() + 1, id.getPath().length() - ".json".length());
+                ResourceLocation name = new ResourceLocation(id.getNamespace(), path);
 
-            try (Resource iresource = resourceManager.getResource(id)) {
-                if (TreasureBags.LOGGER.isTraceEnabled()) {
-                    TreasureBags.LOGGER.trace(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
-                }
+                Optional<Resource> resourceOptional = resourceManager.getResource(id);
+                if (resourceOptional.isPresent()) {
+                    Resource iresource = resourceOptional.get();
+                    if (TreasureBags.LOGGER.isTraceEnabled()) {
+                        TreasureBags.LOGGER.trace(MARKER, "Found bag type file: {}, reading as '{}'", id, name);
+                    }
 
-                JsonObject json = GsonHelper.fromJson(gson, IOUtils.toString(iresource.getInputStream(), StandardCharsets.UTF_8), JsonObject.class);
-                if (json == null) {
-                    TreasureBags.LOGGER.error(MARKER, "Could not load bag type {} as it's null or empty", name);
-                } else {
-                    // Deserialize bag type JSON, register it if its group is not disabled
-                    IBagType type = deserialize(name, json);
+                    JsonObject json = null;
+                    try {
+                        json = GsonHelper.fromJson(gson, IOUtils.toString(iresource.open(), StandardCharsets.UTF_8), JsonObject.class);
+                    } catch (IOException ex) {
+                        TreasureBags.LOGGER.error("Could not read bag type {}", name);
+                        TreasureBags.LOGGER.error(ex);
+                        ERROR_LIST.add(name);
+                    }
 
-                    if (!Config.Common.disabledBagGroups.get().contains(type.getGroup())) {
-                        addBagType(type);
-                    } else {
-                        TreasureBags.LOGGER.debug("Skipping bag type \"{}\" as its group (\"{}\") is disabled in the config",
-                                type.getId(),
-                                type.getGroup());
+                    if (json != null) {
+                        // Deserialize bag type JSON, register it if its group is not disabled
+                        IBagType type = deserialize(name, json);
+
+                        if (!Config.Common.disabledBagGroups.get().contains(type.getGroup())) {
+                            addBagType(type);
+                        } else {
+                            TreasureBags.LOGGER.debug("Skipping bag type \"{}\" as its group (\"{}\") is disabled in the config",
+                                    type.getId(),
+                                    type.getGroup());
+                        }
                     }
                 }
-            } catch (IllegalArgumentException | JsonParseException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Parsing error loading bag type {}", name, ex);
-                ERROR_LIST.add(name.toString());
-            } catch (IOException ex) {
-                TreasureBags.LOGGER.error(MARKER, "Could not read bag type {}", name, ex);
-                ERROR_LIST.add(name.toString());
             }
         }
     }
@@ -123,9 +123,9 @@ public final class BagTypeManager implements ResourceManagerReloadListener {
 
         // Bag type files that failed to load
         if (!ERROR_LIST.isEmpty()) {
-            String listStr = String.join(", ", ERROR_LIST);
+            String listStr = ERROR_LIST.stream().map(ResourceLocation::toString).collect(Collectors.joining(", "));
             messages.add(errorMessage("The following bag types failed to load, check your log file:"));
-            messages.add(new TextComponent(listStr));
+            messages.add(Component.literal(listStr));
         }
 
         // Loot tables that failed to load or are missing
@@ -149,7 +149,7 @@ public final class BagTypeManager implements ResourceManagerReloadListener {
     }
 
     private static Component errorMessage(String str) {
-        return new TextComponent("[Treasure Bags] ").withStyle(ChatFormatting.YELLOW)
-                .append(new TextComponent(str).withStyle(ChatFormatting.WHITE));
+        return Component.literal("[Treasure Bags] ").withStyle(ChatFormatting.YELLOW)
+                .append(Component.literal(str).withStyle(ChatFormatting.WHITE));
     }
 }

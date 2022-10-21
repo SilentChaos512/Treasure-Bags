@@ -12,7 +12,7 @@ import net.silentchaos512.lib.crafting.recipe.ExtendedShapelessRecipe;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.lib.IBagType;
-import net.silentchaos512.treasurebags.setup.ModRecipes;
+import net.silentchaos512.treasurebags.setup.TbRecipes;
 
 public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
     private ResourceLocation typeName;
@@ -52,6 +52,6 @@ public final class ShapelessTreasureBagRecipe extends ExtendedShapelessRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRecipes.SHAPELESS_BAG.get();
+        return TbRecipes.SHAPELESS_BAG.get();
     }
 }

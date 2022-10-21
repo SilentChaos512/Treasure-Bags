@@ -2,49 +2,55 @@
   "type": "minecraft:gift",
   "pools": [
     {
-      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": 8
+              "add": false,
+              "count": 8.0,
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:oak_log"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": 10
+              "add": false,
+              "count": 10.0,
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:apple"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": 20
+              "add": false,
+              "count": 20.0,
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:torch"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ]
 }

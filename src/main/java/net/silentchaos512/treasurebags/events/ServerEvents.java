@@ -1,6 +1,5 @@
 package net.silentchaos512.treasurebags.events;
 
-import net.minecraft.Util;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -22,13 +21,13 @@ public final class ServerEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerJoinServer(PlayerEvent.PlayerLoggedInEvent event) {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         if (!(player instanceof ServerPlayer)) return;
 
         ServerPlayer playerMP = (ServerPlayer) player;
 
         sendBagTypesToClient(playerMP);
-        BagTypeManager.getErrorMessages(playerMP).forEach(text -> player.sendMessage(text, Util.NIL_UUID));
+        BagTypeManager.getErrorMessages(playerMP).forEach(player::sendSystemMessage);
     }
 
     private static void sendBagTypesToClient(ServerPlayer playerMP) {

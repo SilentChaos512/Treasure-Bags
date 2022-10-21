@@ -2,14 +2,15 @@
   "type": "minecraft:gift",
   "pools": [
     {
-      "rolls": 1,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": 5
+              "add": false,
+              "count": 5.0,
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:iron_ingot"
@@ -18,8 +19,9 @@
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": 2
+              "add": false,
+              "count": 2.0,
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:gold_ingot"
@@ -28,7 +30,8 @@
           "type": "minecraft:item",
           "name": "minecraft:diamond"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ]
 }

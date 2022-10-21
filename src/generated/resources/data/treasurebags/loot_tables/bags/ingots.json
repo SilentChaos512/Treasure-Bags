@@ -2,48 +2,76 @@
   "type": "minecraft:gift",
   "pools": [
     {
-      "rolls": {
-        "min": 1.0,
-        "max": 2.0,
-        "type": "minecraft:uniform"
+      "bonus_rolls": {
+        "type": "minecraft:uniform",
+        "max": 1.0,
+        "min": 0.0
       },
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 30,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 2.0,
+                "type": "minecraft:uniform",
                 "max": 4.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:iron_ingot"
+          "name": "minecraft:iron_ingot",
+          "weight": 100
         },
         {
           "type": "minecraft:item",
-          "weight": 15,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 1.0,
-                "max": 2.0,
-                "type": "minecraft:uniform"
-              }
+                "type": "minecraft:uniform",
+                "max": 6.0,
+                "min": 3.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:gold_ingot"
+          "name": "minecraft:copper_ingot",
+          "weight": 70
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:gold_ingot",
+          "weight": 40
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_ingot"
         },
         {
           "type": "minecraft:tag",
+          "expand": true,
           "name": "forge:ingots",
-          "expand": true
+          "weight": 20
         }
-      ]
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 2.0,
+        "min": 1.0
+      }
     }
   ]
 }

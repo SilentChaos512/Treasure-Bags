@@ -8,7 +8,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.silentchaos512.treasurebags.setup.ModItems;
+import net.silentchaos512.treasurebags.setup.TbItems;
 
 public interface IBagType {
     ResourceLocation getId();
@@ -32,7 +32,7 @@ public interface IBagType {
     boolean isVisible();
 
     default ItemStack getItem() {
-        return ModItems.TREASURE_BAG.get().stackOfType(this);
+        return TbItems.TREASURE_BAG.get().stackOfType(this);
     }
 
     static ResourceLocation nameFromJson(JsonObject json) {

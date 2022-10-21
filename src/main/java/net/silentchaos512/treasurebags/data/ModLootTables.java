@@ -7,7 +7,6 @@ import net.minecraft.data.loot.EntityLoot;
 import net.minecraft.data.loot.GiftLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
@@ -30,7 +29,7 @@ import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.treasurebags.loot.SelectBagRarity;
 import net.silentchaos512.treasurebags.loot.SetBagTypeFunction;
-import net.silentchaos512.treasurebags.setup.ModItems;
+import net.silentchaos512.treasurebags.setup.TbItems;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
@@ -59,12 +58,12 @@ public class ModLootTables extends LootTableProvider {
     }
 
     private static LootPoolSingletonContainer.Builder<?> treasureBag(ResourceLocation bagType) {
-        return LootItem.lootTableItem(ModItems.TREASURE_BAG)
+        return LootItem.lootTableItem(TbItems.TREASURE_BAG)
                 .apply(SetBagTypeFunction.builder(bagType));
     }
 
     private static LootPoolSingletonContainer.Builder<?> bagOfRarity(Rarity rarity) {
-        return LootItem.lootTableItem(ModItems.TREASURE_BAG)
+        return LootItem.lootTableItem(TbItems.TREASURE_BAG)
                 .apply(SelectBagRarity.builder(rarity));
     }
 
@@ -171,15 +170,22 @@ public class ModLootTables extends LootTableProvider {
                             .setRolls(UniformGenerator.between(1, 2))
                             .setBonusRolls(UniformGenerator.between(0, 1))
                             .add(LootItem.lootTableItem(Items.IRON_INGOT)
-                                    .setWeight(30)
+                                    .setWeight(100)
                                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(2, 4)))
                             )
+                            .add(LootItem.lootTableItem(Items.COPPER_INGOT)
+                                    .setWeight(70)
+                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(3, 6)))
+                            )
                             .add(LootItem.lootTableItem(Items.GOLD_INGOT)
-                                    .setWeight(15)
+                                    .setWeight(40)
                                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(1, 2)))
                             )
-                            .add(TagEntry.expandTag(Tags.Items.INGOTS)
+                            .add(LootItem.lootTableItem(Items.NETHERITE_INGOT)
                                     .setWeight(1)
+                            )
+                            .add(TagEntry.expandTag(Tags.Items.INGOTS)
+                                    .setWeight(20)
                             )
                     )
             );
@@ -206,16 +212,16 @@ public class ModLootTables extends LootTableProvider {
                     .withPool(LootPool.lootPool()
                             .when(LootItemRandomChanceCondition.randomChance(0.5f))
                             .add(LootItem.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new TextComponent("That Time I Was Slapped With a Salmon, Vol. 4")))
+                                    .apply(() -> setName(Component.literal("That Time I Was Slapped With a Salmon, Vol. 4")))
                             )
                             .add(LootItem.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new TextComponent("The Adventures of Tardigrade Man")))
+                                    .apply(() -> setName(Component.literal("The Adventures of Tardigrade Man")))
                             )
                             .add(LootItem.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new TextComponent("Reading For Dummies")))
+                                    .apply(() -> setName(Component.literal("Reading For Dummies")))
                             )
                             .add(LootItem.lootTableItem(Items.BOOK)
-                                    .apply(() -> setName(new TextComponent("The Story of Larry the Sheep")))
+                                    .apply(() -> setName(Component.literal("The Story of Larry the Sheep")))
                             )
                     )
             );

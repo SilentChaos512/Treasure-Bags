@@ -1,4 +1,3 @@
-/*
 package net.silentchaos512.treasurebags.compat.jei;
 
 import mezz.jei.api.IModPlugin;
@@ -6,7 +5,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.silentchaos512.treasurebags.TreasureBags;
-import net.silentchaos512.treasurebags.setup.ModItems;
+import net.silentchaos512.treasurebags.setup.TbItems;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
 
@@ -21,10 +20,9 @@ public class TreasureBagsJeiPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration reg) {
-        reg.registerSubtypeInterpreter(ModItems.TREASURE_BAG.get(), stack -> {
+        reg.registerSubtypeInterpreter(TbItems.TREASURE_BAG.get(), (stack, ctx) -> {
             IBagType bagType = BagTypeManager.typeFromBag(stack);
             return bagType != null ? bagType.getId().toString() : "null";
         });
     }
 }
-*/

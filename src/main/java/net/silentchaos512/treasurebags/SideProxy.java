@@ -1,13 +1,13 @@
 package net.silentchaos512.treasurebags;
 
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
@@ -20,9 +20,10 @@ import net.silentchaos512.treasurebags.data.DataGenerators;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.network.Network;
-import net.silentchaos512.treasurebags.setup.ModItems;
-import net.silentchaos512.treasurebags.setup.ModLoot;
-import net.silentchaos512.treasurebags.setup.Registration;
+import net.silentchaos512.treasurebags.setup.EntityGroups;
+import net.silentchaos512.treasurebags.setup.TbItems;
+import net.silentchaos512.treasurebags.setup.TbLoot;
+import net.silentchaos512.treasurebags.setup.TbRecipes;
 
 import java.util.Collections;
 
@@ -30,13 +31,18 @@ class SideProxy {
     private static final ResourceLocation STARTING_INVENTORY = TreasureBags.getId("starting_inventory");
 
     SideProxy() {
-        Registration.register();
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        TbItems.ITEMS.register(modEventBus);
+        TbLoot.LOOT_FUNCTIONS.register(modEventBus);
+        TbRecipes.RECIPE_SERIALIZERS.register(modEventBus);
+
+        EntityGroups.init();
         Config.init();
         Network.init();
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(DataGenerators::gatherData);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, ModLoot::register);
 
         MinecraftForge.EVENT_BUS.addListener(this::onAddReloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::onRegisterCommands);
@@ -68,7 +74,7 @@ class SideProxy {
         private void clientSetup(FMLClientSetupEvent event) {
         }
 
-        private void onItemColors(ColorHandlerEvent.Item event) {
+        private void onItemColors(RegisterColorHandlersEvent.Item event) {
             ItemColors colors = event.getItemColors();
             if (colors == null) {
                 TreasureBags.LOGGER.error("ItemColors is null!", new NullPointerException("wat?"));
@@ -76,7 +82,7 @@ class SideProxy {
             }
 
             try {
-                colors.register(TreasureBagItem::getColor, ModItems.TREASURE_BAG);
+                colors.register(TreasureBagItem::getColor, TbItems.TREASURE_BAG);
             } catch (NullPointerException ex) {
                 TreasureBags.LOGGER.error("Something went horribly wrong with ItemColors", ex);
             }

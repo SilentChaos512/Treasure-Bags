@@ -11,16 +11,14 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.silentchaos512.lib.util.PlayerUtils;
-import net.silentchaos512.treasurebags.setup.ModItems;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
+import net.silentchaos512.treasurebags.setup.TbItems;
 
 import java.util.stream.Collectors;
 
@@ -68,7 +66,7 @@ public final class TreasureBagsCommand {
         }
 
         for (ServerPlayer player : EntityArgument.getPlayers(context, "players")) {
-            ItemStack stack = ModItems.TREASURE_BAG.get().stackOfType(bagType, bagCount);
+            ItemStack stack = TbItems.TREASURE_BAG.get().stackOfType(bagType, bagCount);
             PlayerUtils.giveItem(player, stack);
             context.getSource().sendSuccess(translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
         }
@@ -80,11 +78,11 @@ public final class TreasureBagsCommand {
         String str = BagTypeManager.getValues().stream()
                 .map(type -> type.getId().toString())
                 .collect(Collectors.joining(", "));
-        context.getSource().sendSuccess(new TextComponent(str), true);
+        context.getSource().sendSuccess(Component.literal(str), true);
         return 1;
     }
 
     private static Component translate(String key, Object... args) {
-        return new TranslatableComponent("command.treasurebags." + key, args);
+        return Component.translatable("command.treasurebags." + key, args);
     }
 }

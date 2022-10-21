@@ -2,23 +2,28 @@
   "type": "minecraft:gift",
   "pools": [
     {
-      "rolls": 1,
+      "bonus_rolls": {
+        "type": "minecraft:uniform",
+        "max": 1.0,
+        "min": 0.0
+      },
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 40,
-          "name": "minecraft:ender_pearl"
+          "name": "minecraft:ender_pearl",
+          "weight": 40
         },
         {
           "type": "minecraft:item",
-          "weight": 10,
-          "name": "minecraft:ender_eye"
+          "name": "minecraft:ender_eye",
+          "weight": 10
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:ender_chest"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ]
 }

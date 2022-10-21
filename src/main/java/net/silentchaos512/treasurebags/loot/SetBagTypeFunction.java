@@ -13,7 +13,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.silentchaos512.treasurebags.item.TreasureBagItem;
-import net.silentchaos512.treasurebags.setup.ModLoot;
+import net.silentchaos512.treasurebags.setup.TbLoot;
 
 public final class SetBagTypeFunction extends LootItemConditionalFunction {
     private final ResourceLocation typeId;
@@ -44,7 +44,7 @@ public final class SetBagTypeFunction extends LootItemConditionalFunction {
 
     @Override
     public LootItemFunctionType getType() {
-        return ModLoot.SET_BAG_TYPE;
+        return TbLoot.SET_BAG_TYPE.get();
     }
 
     public static class Serializer extends LootItemConditionalFunction.Serializer<SetBagTypeFunction> {

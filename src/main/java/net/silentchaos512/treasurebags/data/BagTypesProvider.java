@@ -1,25 +1,25 @@
 package net.silentchaos512.treasurebags.data;
 
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.HashCache;
 import net.minecraft.data.DataProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.network.chat.TextComponent;
 import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 public class BagTypesProvider implements DataProvider {
     static final Logger LOGGER = LogManager.getLogger();
@@ -86,39 +86,40 @@ public class BagTypesProvider implements DataProvider {
         ret.add(new BagTypeBuilder(Const.Bags.DEFAULT, "example", Rarity.COMMON, Const.LootTables.BAGS_DEFAULT)
                 .noMobDrops()
                 .colors(Color.WHITE, Color.WHITE, Color.WHITE)
-                .displayName(new TextComponent("Treasure Bag"))
+                .displayName(Component.literal("Treasure Bag"))
         );
 
         ret.add(new BagTypeBuilder(Const.Bags.TEST, "example", Rarity.COMMON, Const.LootTables.BAGS_TEST)
                 .noMobDrops()
                 .colors(0xFF00FF, 0X00FF00, 0XB8860B)
-                .displayName(new TextComponent("Test Bag"))
+                .displayName(Component.literal("Test Bag"))
         );
 
         return ret;
     }
 
     @Override
-    public void run(HashCache cache) {
+    public void run(CachedOutput cache) {
         Path outputFolder = this.generator.getOutputFolder();
+        Set<ResourceLocation> entries = Sets.newHashSet();
 
-        for (BagTypeBuilder builder : getBagTypes()) {
-            try {
-                String jsonStr = GSON.toJson(builder.serialize());
-                String hashStr = SHA1.hashUnencodedChars(jsonStr).toString();
-                Path path = outputFolder.resolve(String.format("data/%s/treasurebags_types/%s.json", builder.bagTypeId.getNamespace(), builder.bagTypeId.getPath()));
-                if (!Objects.equals(cache.getHash(outputFolder), hashStr) || !Files.exists(path)) {
-                    Files.createDirectories(path.getParent());
-
-                    try (BufferedWriter writer = Files.newBufferedWriter(path)) {
-                        writer.write(jsonStr);
-                    }
-                }
-
-                cache.putNew(path, hashStr);
-            } catch (IOException ex) {
-                LOGGER.error("Could not save treasure bag types {}", outputFolder, ex);
+        //noinspection OverlyLongLambda
+        getBagTypes().forEach(builder -> {
+            if (entries.contains(builder.bagTypeId)) {
+                throw new IllegalStateException("Duplicate bag type: " + builder.bagTypeId);
             }
+
+            entries.add(builder.bagTypeId);
+            Path path = outputFolder.resolve(String.format("data/%s/treasurebags_types/%s.json", builder.bagTypeId.getNamespace(), builder.bagTypeId.getPath()));
+            trySaveStable(cache, builder, path);
+        });
+    }
+
+    private static void trySaveStable(CachedOutput cache, BagTypeBuilder builder, Path path) {
+        try {
+            DataProvider.saveStable(cache, builder.serialize(), path);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

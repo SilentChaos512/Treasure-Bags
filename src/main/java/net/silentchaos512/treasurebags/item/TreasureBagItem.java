@@ -1,12 +1,9 @@
 package net.silentchaos512.treasurebags.item;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -144,13 +141,13 @@ public class TreasureBagItem extends LootContainerItem {
         if (flagIn.isAdvanced()) {
             IBagType type = getBagType(stack);
             if (type != null) {
-                tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".type", type.getId())
+                tooltip.add(Component.translatable(this.getDescriptionId() + ".type", type.getId())
                         .withStyle(ChatFormatting.YELLOW));
             } else {
                 String typeStr = getBagTypeString(stack);
-                tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".unknownType")
+                tooltip.add(Component.translatable(this.getDescriptionId() + ".unknownType")
                         .withStyle(ChatFormatting.RED));
-                tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".type", typeStr)
+                tooltip.add(Component.translatable(this.getDescriptionId() + ".type", typeStr)
                         .withStyle(ChatFormatting.YELLOW));
             }
         }
@@ -162,18 +159,18 @@ public class TreasureBagItem extends LootContainerItem {
         String typeStr = getBagTypeString(stack);
         ResourceLocation typeName = ResourceLocation.tryParse(typeStr);
         if (typeName != null) {
-            tooltip.add(new TextComponent(typeName.getNamespace())
+            tooltip.add(Component.literal(typeName.getNamespace())
                     .withStyle(ChatFormatting.BLUE)
                     .withStyle(ChatFormatting.ITALIC));
         } else {
-            tooltip.add(new TranslatableComponent(this.getDescriptionId() + ".invalidType")
+            tooltip.add(Component.translatable(this.getDescriptionId() + ".invalidType")
                     .withStyle(ChatFormatting.RED));
         }
     }
 
     @Override
     public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (!allowdedIn(group)) return;
+        if (!allowedIn(group)) return;
         items.add(new ItemStack(this));
 
         // Add for each type (sorted by ID)
@@ -253,10 +250,10 @@ public class TreasureBagItem extends LootContainerItem {
     }
 
     private static void listItemReceivedInChat(ServerPlayer playerMP, ItemStack stack) {
-        Component itemReceivedText = new TranslatableComponent(
+        Component itemReceivedText = Component.translatable(
                 "item.silentlib.lootContainer.itemReceived",
                 stack.getCount(),
                 stack.getHoverName());
-        playerMP.sendMessage(itemReceivedText, Util.NIL_UUID);
+        playerMP.sendSystemMessage(itemReceivedText);
     }
 }

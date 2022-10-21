@@ -1,27 +1,25 @@
 package net.silentchaos512.treasurebags.crafting.ingredient;
 
 import com.google.gson.JsonObject;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
-import net.silentchaos512.treasurebags.setup.ModItems;
+import net.silentchaos512.treasurebags.setup.TbItems;
 
 import javax.annotation.Nullable;
 import java.util.stream.Stream;
-
-import net.minecraft.world.item.crafting.Ingredient.ItemValue;
 
 public final class TreasureBagIngredient extends Ingredient {
     // Store bag type ID because the bag types likely don't exist yet
     private final ResourceLocation typeName;
 
     private TreasureBagIngredient(ResourceLocation typeName) {
-        super(Stream.of(new ItemValue(ModItems.TREASURE_BAG.get().stackOfType(typeName))));
+        super(Stream.of(new ItemValue(TbItems.TREASURE_BAG.get().stackOfType(typeName))));
         this.typeName = typeName;
     }
 

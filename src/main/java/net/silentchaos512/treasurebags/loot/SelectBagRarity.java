@@ -18,11 +18,10 @@ import net.silentchaos512.treasurebags.item.TreasureBagItem;
 import net.silentchaos512.treasurebags.lib.BagType;
 import net.silentchaos512.treasurebags.lib.BagTypeManager;
 import net.silentchaos512.treasurebags.lib.IBagType;
-import net.silentchaos512.treasurebags.setup.ModLoot;
+import net.silentchaos512.treasurebags.setup.TbLoot;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 public class SelectBagRarity extends LootItemConditionalFunction {
     private final Rarity rarity;
@@ -53,7 +52,7 @@ public class SelectBagRarity extends LootItemConditionalFunction {
 
         List<IBagType> list = BagTypeManager.getValues().stream()
                 .filter(type -> type.canDropFromMob(entity) && type.getRarity() == this.rarity)
-                .collect(Collectors.toList());
+                .toList();
         if (list.isEmpty()) return ItemStack.EMPTY;
 
         IBagType bagType = list.get(TreasureBags.RANDOM.nextInt(list.size()));
@@ -62,7 +61,7 @@ public class SelectBagRarity extends LootItemConditionalFunction {
 
     @Override
     public LootItemFunctionType getType() {
-        return ModLoot.SELECT_BAG_RARITY;
+        return TbLoot.SELECT_BAG_RARITY.get();
     }
 
     public static class Serializer extends LootItemConditionalFunction.Serializer<SelectBagRarity> {

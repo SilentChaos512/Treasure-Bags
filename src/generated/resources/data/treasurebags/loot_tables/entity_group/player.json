@@ -2,24 +2,25 @@
   "type": "minecraft:entity",
   "pools": [
     {
-      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "treasurebags:set_bag_type",
-              "type": "treasurebags:player"
+              "type": "treasurebags:player",
+              "function": "treasurebags:set_bag_type"
             }
           ],
           "name": "treasurebags:treasure_bag"
         }
       ],
-      "conditions": [
-        {
-          "condition": "minecraft:killed_by_player"
-        }
-      ]
+      "rolls": 1.0
     }
   ]
 }

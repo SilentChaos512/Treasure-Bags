@@ -2,107 +2,118 @@
   "type": "minecraft:gift",
   "pools": [
     {
-      "rolls": 1,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 15,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 4.0,
+                "type": "minecraft:uniform",
                 "max": 8.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 4.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:stick"
+          "name": "minecraft:stick",
+          "weight": 15
         },
         {
           "type": "minecraft:tag",
-          "name": "forge:rods",
-          "expand": true
+          "expand": true,
+          "name": "forge:rods"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "rolls": 1,
+      "bonus_rolls": {
+        "type": "minecraft:uniform",
+        "max": 1.0,
+        "min": 0.0
+      },
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 72,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 6.0,
+                "type": "minecraft:uniform",
                 "max": 12.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:cobblestone"
+          "name": "minecraft:cobblestone",
+          "weight": 72
         },
         {
           "type": "minecraft:item",
-          "weight": 48,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 3.0,
+                "type": "minecraft:uniform",
                 "max": 7.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 3.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:stone"
+          "name": "minecraft:stone",
+          "weight": 48
         },
         {
           "type": "minecraft:item",
-          "weight": 30,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 4.0,
+                "type": "minecraft:uniform",
                 "max": 8.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 4.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:andesite"
+          "name": "minecraft:andesite",
+          "weight": 30
         },
         {
           "type": "minecraft:item",
-          "weight": 30,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 4.0,
+                "type": "minecraft:uniform",
                 "max": 8.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 4.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:diorite"
+          "name": "minecraft:diorite",
+          "weight": 30
         },
         {
           "type": "minecraft:item",
-          "weight": 30,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 4.0,
+                "type": "minecraft:uniform",
                 "max": 8.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 4.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:granite"
+          "name": "minecraft:granite",
+          "weight": 30
         },
         {
           "type": "minecraft:item",
@@ -112,56 +123,61 @@
           "type": "minecraft:item",
           "name": "minecraft:emerald"
         }
-      ]
+      ],
+      "rolls": 1.0
     },
     {
-      "rolls": 1,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 10,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 2.0,
+                "type": "minecraft:uniform",
                 "max": 4.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:bone"
+          "name": "minecraft:bone",
+          "weight": 10
         },
         {
           "type": "minecraft:item",
-          "weight": 4,
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 3.0,
+                "type": "minecraft:uniform",
                 "max": 8.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 3.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
-          "name": "minecraft:bone_meal"
+          "name": "minecraft:bone_meal",
+          "weight": 4
         },
         {
           "type": "minecraft:item",
           "functions": [
             {
-              "function": "minecraft:set_count",
+              "add": false,
               "count": {
-                "min": 1.0,
+                "type": "minecraft:uniform",
                 "max": 2.0,
-                "type": "minecraft:uniform"
-              }
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
             }
           ],
           "name": "minecraft:bone_block"
         }
-      ]
+      ],
+      "rolls": 1.0
     }
   ]
 }
