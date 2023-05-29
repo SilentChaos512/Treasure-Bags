@@ -1,17 +1,17 @@
 {
-  "bagColor": "#FFFFFF",
-  "bagOverlayColor": "#FF0000",
-  "bagStringColor": "#CD853F",
+  "group": "default",
   "displayName": {
     "translate": "bag.treasurebags.food"
   },
+  "lootTable": "treasurebags:bags/food",
+  "rarity": "common",
+  "bagColor": "#FFFFFF",
+  "bagOverlayColor": "#FF0000",
+  "bagStringColor": "#CD853F",
   "dropsFromGroups": [
     "player",
     "boss",
     "hostile",
     "peaceful"
-  ],
-  "group": "default",
-  "lootTable": "treasurebags:bags/food",
-  "rarity": "common"
+  ]
 }

@@ -1,14 +1,15 @@
 package net.silentchaos512.treasurebags.data;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.EntityLoot;
-import net.minecraft.data.loot.GiftLoot;
+import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.loot.packs.VanillaGiftLoot;
+import net.minecraft.data.loot.packs.VanillaLootTableProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.storage.loot.*;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.storage.loot.entries.*;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SetNameFunction;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
@@ -33,22 +33,21 @@ import net.silentchaos512.treasurebags.setup.TbItems;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class ModLootTables extends LootTableProvider {
     public ModLootTables(DataGenerator dataGeneratorIn) {
-        super(dataGeneratorIn);
+        super(dataGeneratorIn.getPackOutput(), Collections.emptySet(), VanillaLootTableProvider.create(dataGeneratorIn.getPackOutput()).getTables());
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
+    public List<SubProviderEntry> getTables() {
         return ImmutableList.of(
-                Pair.of(Entities::new, LootContextParamSets.ENTITY),
-                Pair.of(Gifts::new, LootContextParamSets.GIFT)
+                new SubProviderEntry(Entities::new, LootContextParamSets.ENTITY),
+                new SubProviderEntry(Gifts::new, LootContextParamSets.GIFT)
         );
     }
 
@@ -87,14 +86,9 @@ public class ModLootTables extends LootTableProvider {
         return SetItemCountFunction.setCount(UniformGenerator.between(min, max));
     }
 
-    @Override
-    public String getName() {
-        return "Treasure Bags - Loot Tables";
-    }
-
-    private static class Gifts extends GiftLoot {
+    private static class Gifts extends VanillaGiftLoot {
         @Override
-        public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             consumer.accept(Const.LootTables.STARTING_INVENTORY, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
                             .add(treasureBag(Const.Bags.SPAWN))
@@ -387,9 +381,17 @@ public class ModLootTables extends LootTableProvider {
         }
     }
 
-    private static class Entities extends EntityLoot {
+    private static class Entities extends EntityLootSubProvider {
+        protected Entities() {
+            super(FeatureFlags.REGISTRY.allFlags());
+        }
+
         @Override
-        public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
+        public void generate() {
+        }
+
+        @Override
+        public void generate(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             consumer.accept(StandardEntityGroups.BOSS.getLootTable(), LootTable.lootTable()
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(2))

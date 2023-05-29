@@ -1,12 +1,12 @@
 {
-  "bagColor": "#FFFFFF",
-  "bagOverlayColor": "#FFFFFF",
-  "bagStringColor": "#FFFFFF",
+  "group": "example",
   "displayName": {
     "text": "Treasure Bag"
   },
-  "dropsFromGroups": [],
-  "group": "example",
   "lootTable": "treasurebags:bags/default",
-  "rarity": "common"
+  "rarity": "common",
+  "bagColor": "#FFFFFF",
+  "bagOverlayColor": "#FFFFFF",
+  "bagStringColor": "#FFFFFF",
+  "dropsFromGroups": []
 }

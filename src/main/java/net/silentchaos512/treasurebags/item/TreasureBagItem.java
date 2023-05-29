@@ -13,7 +13,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
@@ -168,9 +167,8 @@ public class TreasureBagItem extends LootContainerItem {
         }
     }
 
-    @Override
-    public void fillItemCategory(@Nonnull CreativeModeTab group, @Nonnull NonNullList<ItemStack> items) {
-        if (!allowedIn(group)) return;
+    public List<ItemStack> getSubItems() {
+        NonNullList<ItemStack> items = NonNullList.create();
         items.add(new ItemStack(this));
 
         // Add for each type (sorted by ID)
@@ -181,6 +179,8 @@ public class TreasureBagItem extends LootContainerItem {
                 items.add(stackOfType(type));
             }
         }
+
+        return items;
     }
 
     @Nonnull

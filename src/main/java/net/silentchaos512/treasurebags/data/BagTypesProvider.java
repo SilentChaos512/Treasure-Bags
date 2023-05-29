@@ -1,25 +1,36 @@
 package net.silentchaos512.treasurebags.data;
 
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingOutputStream;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonWriter;
+import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Rarity;
+import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.lib.Const;
 import net.silentchaos512.treasurebags.lib.StandardEntityGroups;
 import net.silentchaos512.utils.Color;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class BagTypesProvider implements DataProvider {
     static final Logger LOGGER = LogManager.getLogger();
@@ -99,9 +110,10 @@ public class BagTypesProvider implements DataProvider {
     }
 
     @Override
-    public void run(CachedOutput cache) {
-        Path outputFolder = this.generator.getOutputFolder();
+    public CompletableFuture<?> run(CachedOutput cache) {
+        Path outputFolder = this.generator.getPackOutput().getOutputFolder();
         Set<ResourceLocation> entries = Sets.newHashSet();
+        List<CompletableFuture<?>> list = new ArrayList<>();
 
         //noinspection OverlyLongLambda
         getBagTypes().forEach(builder -> {
@@ -111,15 +123,30 @@ public class BagTypesProvider implements DataProvider {
 
             entries.add(builder.bagTypeId);
             Path path = outputFolder.resolve(String.format("data/%s/treasurebags_types/%s.json", builder.bagTypeId.getNamespace(), builder.bagTypeId.getPath()));
-            trySaveStable(cache, builder, path);
+            list.add(saveStable(cache, builder.serialize(), path));
         });
+
+        return CompletableFuture.allOf(list.toArray(new CompletableFuture[0]));
     }
 
-    private static void trySaveStable(CachedOutput cache, BagTypeBuilder builder, Path path) {
-        try {
-            DataProvider.saveStable(cache, builder.serialize(), path);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+    public static CompletableFuture<?> saveStable(CachedOutput p_253653_, JsonElement p_254542_, Path p_254467_) {
+        // Slightly modified version of DataProvider.saveStable. Only difference is that this one does not sort keys!
+        return CompletableFuture.runAsync(() -> {
+            try {
+                ByteArrayOutputStream bytearrayoutputstream = new ByteArrayOutputStream();
+                HashingOutputStream hashingoutputstream = new HashingOutputStream(Hashing.sha1(), bytearrayoutputstream);
+
+                try (JsonWriter jsonwriter = new JsonWriter(new OutputStreamWriter(hashingoutputstream, StandardCharsets.UTF_8))) {
+                    jsonwriter.setSerializeNulls(false);
+                    jsonwriter.setIndent("  ");
+                    GsonHelper.writeValue(jsonwriter, p_254542_, null);
+                }
+
+                p_253653_.writeIfNeeded(p_254467_, bytearrayoutputstream.toByteArray(), hashingoutputstream.hash());
+            } catch (IOException ioexception) {
+                TreasureBags.LOGGER.error("Failed to save file to {}", p_254467_, ioexception);
+            }
+
+        }, Util.backgroundExecutor());
     }
 }

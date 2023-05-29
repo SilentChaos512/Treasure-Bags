@@ -5,7 +5,9 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.silentchaos512.treasurebags.setup.TbItems;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +29,7 @@ public final class TreasureBags {
     public TreasureBags() {
         INSTANCE = this;
         PROXY = DistExecutor.safeRunForDist(() -> SideProxy.Client::new, () -> SideProxy.Server::new);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(TbItems::onBuildContentsOfCreativeTabs);
     }
 
     public static String getVersion() {
