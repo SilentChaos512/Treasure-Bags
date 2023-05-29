@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[45,)"
 license="MIT"
 issueTrackerURL="https://github.com/SilentChaos512/Treasure-Bags/issues"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/treasure-bags"
@@ -19,13 +19,13 @@ authors="SilentChaos512"
 [[dependencies.treasurebags]]
     modId="forge"
     mandatory=true
-    versionRange="[41,)"
+    versionRange="[45,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.treasurebags]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19,1.20)"
+    versionRange="[1.19.4,1.20)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.treasurebags]]

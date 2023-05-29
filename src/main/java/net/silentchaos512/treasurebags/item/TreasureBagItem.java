@@ -216,7 +216,7 @@ public class TreasureBagItem extends LootContainerItem {
         if (Config.Common.alwaysSpawnItems.get() || !playerIn.getInventory().add(copy)) {
             ItemEntity entityItem = new ItemEntity(playerIn.level, playerIn.getX(), playerIn.getY(0.5), playerIn.getZ(), copy);
             entityItem.setNoPickUpDelay();
-            entityItem.setOwner(playerIn.getUUID());
+            entityItem.setThrower(playerIn.getUUID());
             playerIn.level.addFreshEntity(entityItem);
         }
     }

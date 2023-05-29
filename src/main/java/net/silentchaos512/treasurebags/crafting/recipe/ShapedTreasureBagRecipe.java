@@ -1,6 +1,7 @@
 package net.silentchaos512.treasurebags.crafting.recipe;
 
 import com.google.gson.JsonObject;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -35,14 +36,14 @@ public final class ShapedTreasureBagRecipe extends ExtendedShapedRecipe {
     }
 
     @Override
-    public ItemStack getResultItem() {
-        ItemStack copy = this.getBaseRecipe().getResultItem().copy();
+    public ItemStack getResultItem(RegistryAccess registryAccess) {
+        ItemStack copy = this.getBaseRecipe().getResultItem(registryAccess).copy();
         return TreasureBagItem.setBagType(copy, this.typeName);
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
-        ItemStack result = this.getResultItem();
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess registryAccess) {
+        ItemStack result = this.getResultItem(registryAccess);
         if (!(result.getItem() instanceof TreasureBagItem)) {
             TreasureBags.LOGGER.warn("Result of a treasure bag recipe is not a treasure bag? Recipe '{}' crafts {}",
                     this.getId(), result);
