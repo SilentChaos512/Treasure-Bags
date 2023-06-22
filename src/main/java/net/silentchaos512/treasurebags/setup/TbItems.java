@@ -2,7 +2,7 @@ package net.silentchaos512.treasurebags.setup;
 
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.silentchaos512.lib.registry.ItemRegistryObject;
@@ -20,8 +20,8 @@ public final class TbItems {
 
     private TbItems() {}
 
-    public static void onBuildContentsOfCreativeTabs(CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+    public static void onBuildContentsOfCreativeTabs(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.acceptAll(TREASURE_BAG.get().getSubItems());
         }
     }

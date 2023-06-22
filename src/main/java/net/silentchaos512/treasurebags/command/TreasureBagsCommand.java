@@ -68,7 +68,7 @@ public final class TreasureBagsCommand {
         for (ServerPlayer player : EntityArgument.getPlayers(context, "players")) {
             ItemStack stack = TbItems.TREASURE_BAG.get().stackOfType(bagType, bagCount);
             PlayerUtils.giveItem(player, stack);
-            context.getSource().sendSuccess(translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
+            context.getSource().sendSuccess(() -> translate("give.success", bagCount, bagType.getCustomName(), player.getScoreboardName()), true);
         }
 
         return 1;
@@ -78,7 +78,7 @@ public final class TreasureBagsCommand {
         String str = BagTypeManager.getValues().stream()
                 .map(type -> type.getId().toString())
                 .collect(Collectors.joining(", "));
-        context.getSource().sendSuccess(Component.literal(str), true);
+        context.getSource().sendSuccess(() -> Component.literal(str), true);
         return 1;
     }
 

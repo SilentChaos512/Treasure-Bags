@@ -55,6 +55,18 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:writable_book"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "text": "Franz"
+              }
+            }
+          ],
+          "name": "minecraft:hopper"
         }
       ],
       "rolls": {
@@ -123,5 +135,6 @@
       ],
       "rolls": 1.0
     }
-  ]
+  ],
+  "random_sequence": "treasurebags:bags/literacy"
 }

@@ -205,7 +205,7 @@ public class TreasureBagItem extends LootContainerItem {
         });
 
         // Play item pickup sound...
-        playerMP.level.playSound(null, playerMP.getX(), playerMP.getY(), playerMP.getZ(),
+        playerMP.level().playSound(null, playerMP.getX(), playerMP.getY(), playerMP.getZ(),
                 SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
                 ((playerMP.getRandom().nextFloat() - playerMP.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
         heldItem.shrink(openWholeStack ? heldItem.getCount() : 1);
@@ -214,10 +214,10 @@ public class TreasureBagItem extends LootContainerItem {
 
     private void giveOrDropItem(Player playerIn, ItemStack copy) {
         if (Config.Common.alwaysSpawnItems.get() || !playerIn.getInventory().add(copy)) {
-            ItemEntity entityItem = new ItemEntity(playerIn.level, playerIn.getX(), playerIn.getY(0.5), playerIn.getZ(), copy);
+            ItemEntity entityItem = new ItemEntity(playerIn.level(), playerIn.getX(), playerIn.getY(0.5), playerIn.getZ(), copy);
             entityItem.setNoPickUpDelay();
             entityItem.setThrower(playerIn.getUUID());
-            playerIn.level.addFreshEntity(entityItem);
+            playerIn.level().addFreshEntity(entityItem);
         }
     }
 

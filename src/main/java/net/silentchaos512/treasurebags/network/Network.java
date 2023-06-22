@@ -23,7 +23,7 @@ public final class Network {
         channel.messageBuilder(SyncBagTypesPacket.class, 1)
                 .decoder(SyncBagTypesPacket::fromBytes)
                 .encoder(SyncBagTypesPacket::toBytes)
-                .consumer(BagTypeManager::handleSyncPacket)
+                .consumerMainThread(BagTypeManager::handleSyncPacket)
                 .add();
     }
 

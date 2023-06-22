@@ -35,6 +35,7 @@ class SideProxy {
 
         TbItems.ITEMS.register(modEventBus);
         TbLoot.LOOT_FUNCTIONS.register(modEventBus);
+        TbLoot.LOOT_MODIFIERS.register(modEventBus);
         TbRecipes.RECIPE_SERIALIZERS.register(modEventBus);
 
         EntityGroups.init();

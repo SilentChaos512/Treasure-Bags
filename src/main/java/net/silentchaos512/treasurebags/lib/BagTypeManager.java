@@ -13,6 +13,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraftforge.network.NetworkEvent;
 import net.silentchaos512.treasurebags.TreasureBags;
 import net.silentchaos512.treasurebags.config.Config;
@@ -141,10 +142,10 @@ public final class BagTypeManager implements ResourceManagerReloadListener {
     }
 
     private static int countMissingLootTables(ServerPlayer player) {
-        MinecraftServer server = player.level.getServer();
+        MinecraftServer server = player.level().getServer();
         if (server == null) return 0;
 
-        Collection<ResourceLocation> lootTables = server.getLootTables().getIds();
+        Collection<ResourceLocation> lootTables = server.getLootData().getKeys(LootDataType.TABLE);
         return (int) MAP.values().stream().filter(bagType -> !lootTables.contains(bagType.getLootTable())).count();
     }
 

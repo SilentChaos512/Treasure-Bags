@@ -202,6 +202,11 @@ public class ModLootTables extends LootTableProvider {
                             .add(LootItem.lootTableItem(Items.WRITABLE_BOOK)
                                     .setWeight(1)
                             )
+                            // TODO: Move to another bag type for joke items?
+                            .add(LootItem.lootTableItem(Items.HOPPER)
+                                    .setWeight(1)
+                                    .apply(() -> setName(Component.literal("Franz")))
+                            )
                     )
                     .withPool(LootPool.lootPool()
                             .when(LootItemRandomChanceCondition.randomChance(0.5f))
