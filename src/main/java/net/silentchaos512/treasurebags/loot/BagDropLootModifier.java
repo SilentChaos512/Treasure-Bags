@@ -36,6 +36,11 @@ public class BagDropLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+        // FIXME: Remove and use this method instead of EventHandler when Forge fixes their stuff...
+        if (true) {
+            return generatedLoot;
+        }
+
         TreasureBags.LOGGER.debug(context.getQueriedLootTableId() + ": " + context.getParamOrNull(LootContextParams.THIS_ENTITY));
 
         Entity thisEntity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
